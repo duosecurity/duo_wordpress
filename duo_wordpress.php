@@ -126,7 +126,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
     
     function duo_admin() {
-        add_options_page('Duo Two-Factor', 'Duo Two-Factor', 8, 'duo_wordpress', 'duo_options_page');
+        add_options_page('Duo Two-Factor', 'Duo Two-Factor', 'manage_options', 'duo_wordpress', 'duo_options_page');
     }
 
     function duo_authenticate_user($user="", $username="", $password="") {
