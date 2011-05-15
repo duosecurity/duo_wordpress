@@ -51,6 +51,10 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Screenshots ==
 
+1. Duo's WordPress integration adds strong two-factor authentication to any WordPress login. After entering their primary credentials (a username and password), the user is challenged to complete secondary authentication via Duo Push, phone callback, or one-time passcodes generated via the Duo Mobile app or delivered via SMS.
+
+2. The Duo Mobile application allows users to generate passcodes or use Duo Push to perform secondary authentication using their mobile device.
+
 == Changelog ==
 
 = 1.0 =
