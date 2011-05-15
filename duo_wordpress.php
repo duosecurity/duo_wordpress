@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ?>
     <html>
         <head>
-        <link rel="stylesheet" type="text/css" href="wp-admin/css/login.css" />
+        <link rel="stylesheet" type="text/css" href="<?php echo admin_url('css/login.css'); ?>" />
         <style>
             body{
                  background:#F9F9F9;
@@ -57,7 +57,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         </head>
         <body class="login" >
         <p id="backtoblog"><a href="<?php echo get_bloginfo('wpurl');?>" title="Are you lost?">&larr; Back to <?php echo get_bloginfo('name'); ?></a></p>
-        <script src="wp-content/plugins/duo_wordpress/duo_web/Duo-Web-v1.bundled.min.js"></script>
+        <script src="<?php echo plugins_url('duo_web/Duo-Web-v1.bundled.min.js', __FILE__); ?>"></script>
         <script>
         Duo.init({
             'host': <?php echo "'" . $duo_url . "'"; ?>,
