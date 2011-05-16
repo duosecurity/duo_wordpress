@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     require_once("duo_web/duo_web.php");
 
-    function duo_sign_request($user, $redirect, $pass) {
+    function duo_sign_request($user, $redirect) {
         $ikey = get_option('duo_ikey');
         $skey = get_option('duo_skey');
         $duo_host = get_option('duo_host');
