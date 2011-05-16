@@ -1,15 +1,15 @@
 === Duo Two-Factor Authentication ===
 Contributors: duosecurity
-Tags: authentication, two-factor, login, username, password
+Tags: authentication, two-factor, login, username, password, duo, security
 Requires at least: 2.8
 Tested up to: 3.1.2
 Stable tag: 1.0
 
-This plugin enables Duo two-factor authentication for WordPress logins.
+This plugin enables Duo Security's two-factor authentication for WordPress logins.
 
 == Description ==
 
-This plugin enables Duo two-factor authentication for WordPress logins.
+This plugin enables Duo Security's two-factor authentication for WordPress logins.
 
 Duo provides simple two-factor authentication as a service via:
 
@@ -57,10 +57,16 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Changelog ==
 
+= 1.1 =
+* Minor tweaks
+
 = 1.0 =
 * Initial release!
 
 == Upgrade Notice ==
+
+= 1.1 =
+* Minor tweaks
 
 = 1.0 =
 * Initial release!
