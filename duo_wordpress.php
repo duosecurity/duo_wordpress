@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
         $request_sig = Duo::signRequest($ikey, $skey, $username);
 
-        $exptime = time() + 86400; // let the duo login form expire within 24 hours
+        $exptime = time() + 3600; // let the duo login form expire within 1 hour
 ?>
     <html>
         <head>
