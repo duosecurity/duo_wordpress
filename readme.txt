@@ -57,10 +57,20 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Changelog ==
 
+= 1.1 =
+* Encode text box attrs
+* Expire login form after 1 hour
+* wp_redirect -> wp_safe_redirect
+* Improved readme install guide
+* Removed old argument to duo_sign_request (fixes error seen by users)
+
 = 1.0 =
 * Initial release!
 
 == Upgrade Notice ==
+
+= 1.1 =
+* Removes an error shown to users 
 
 = 1.0 =
 * Initial release!
