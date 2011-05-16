@@ -100,7 +100,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 $user = get_userdatabylogin($_POST['u']);
                 if ($user->user_login == Duo::verifyResponse(get_option('duo_skey'), $_POST['sig_response'])) {
                     wp_set_auth_cookie($user->ID);
-                    wp_redirect($_POST['redirect_to']);
+                    wp_safe_redirect($_POST['redirect_to']);
                     exit();
                 }
             } else {
