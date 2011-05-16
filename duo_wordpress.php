@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
         $request_sig = Duo::signRequest($ikey, $skey, $username);
 
-        $exptime = time() + 300; // expire in 5 minutes
+        $exptime = time() + 3600; // let the duo login form expire within 1 hour
 ?>
     <html>
         <head>
@@ -73,10 +73,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                         <iframe id="duo_iframe" width="380" height="600" frameborder="0" allowtransparency="true" style="background: transparent;"></iframe>
                     </div>
                     <form method="POST" style="display:none;" id="duo_form">
-                        <input type="hidden" name="redirect_to" value="<?php echo $redirect; ?>"/>
-                        <input type="hidden" name="u" value="<?php echo $username; ?>"/>
-                        <input type="hidden" name="exptime" value="<?php echo $exptime; ?>"/>
-                        <input type="hidden" name="uhash" value="<?php echo wp_hash($username.$exptime); ?>"/>
+                        <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>"/>
+                        <input type="hidden" name="u" value="<?php echo esc_attr($username); ?>"/>
+                        <input type="hidden" name="exptime" value="<?php echo esc_attr($exptime); ?>"/>
+                        <input type="hidden" name="uhash" value="<?php echo esc_attr(wp_hash($username.$exptime)); ?>"/>
                     </form>
                 </div>
             </div>
@@ -100,7 +100,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 $user = get_userdatabylogin($_POST['u']);
                 if ($user->user_login == Duo::verifyResponse(get_option('duo_skey'), $_POST['sig_response'])) {
                     wp_set_auth_cookie($user->ID);
-                    wp_redirect($_POST['redirect_to']);
+                    wp_safe_redirect($_POST['redirect_to']);
                     exit();
                 }
             } else {
@@ -138,17 +138,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
 
     function duo_settings_ikey() {
-        $ikey = get_option('duo_ikey');
+        $ikey = esc_attr(get_option('duo_ikey'));
         echo "<input id='duo_ikey' name='duo_ikey' size='40' type='text' value='$ikey' />";
     }
 
     function duo_settings_skey() {
-        $skey = get_option('duo_skey');
+        $skey = esc_attr(get_option('duo_skey'));
         echo "<input id='duo_skey' name='duo_skey' size='40' type='text' value='$skey' />";
     }
 
     function duo_settings_host() {
-        $host = get_option('duo_host');
+        $host = esc_attr(get_option('duo_host'));
         if (!$host) {
             $host = "api-eval.duosecurity.com";
         }
