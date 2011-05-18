@@ -67,10 +67,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             </script>
 
             <div style="width: 100%; text-align: center;">
-                <div style="width:360px; text-align: left;" id="login">
-                    <h1 style="text-align:center;"><a style="width: 360px;" href="http://wordpress.org/" title="Powered by WordPress"><?php echo get_bloginfo('name'); ?></a></h1>
+                <div style="width:500px; text-align: left;" id="login">
+                    <h1 style="text-align:center;"><a style="width: 500px;" href="http://wordpress.org/" title="Powered by WordPress"><?php echo get_bloginfo('name'); ?></a></h1>
                     <div style="text-align: center;">
-                        <iframe id="duo_iframe" width="380" height="600" frameborder="0" allowtransparency="true" style="background: transparent;"></iframe>
+                        <iframe id="duo_iframe" width="500" height="900" frameborder="0" allowtransparency="true" style="background: transparent;"></iframe>
                     </div>
                     <form method="POST" style="display:none;" id="duo_form">
                         <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>"/>
