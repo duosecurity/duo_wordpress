@@ -3,7 +3,7 @@ Contributors: duosecurity
 Tags: authentication, two-factor, login, username, password, duo, security
 Requires at least: 2.8
 Tested up to: 3.1.2
-Stable tag: 1.1
+Stable tag: 1.1.1
 
 This plugin enables Duo Security's two-factor authentication for WordPress logins.
 
