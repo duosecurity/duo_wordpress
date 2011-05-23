@@ -139,7 +139,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     function duo_settings_ikey() {
         $ikey = esc_attr(get_option('duo_ikey'));
-        echo "<input id='duo_ikey' name='duo_ikey' size='40' type='text' value='$ikey' />";
+		echo "<input id='duo_ikey' name='duo_ikey' size='40' type='text' value='$ikey' />";
     }
 
     function duo_settings_skey() {
@@ -161,13 +161,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         echo "<p>If you don't yet have a Duo account, sign up now for free at <a target='_blank' href='http://www.duosecurity.com'>http://www.duosecurity.com</a>.</p>";
     }
 
+	function duo_ikey_validate($ikey){
+		if(strlen($ikey) != 20 || substr($ikey, 0, 2) !== "DI"){
+			add_settings_error('duo_ikey', '', 'Integration key is not valid');
+			return "";
+		}
+		else
+			return $ikey;
+	}
+	
+	function duo_skey_validate($skey){
+		if(strlen($skey) != 40){
+			add_settings_error('duo_skey', '', 'Secret key is not valid');
+			return "";
+		}
+		else
+			return $skey;
+	}
+
+
     function duo_admin_init() {
         add_settings_section('duo_settings', 'Main Settings', 'duo_settings_text', 'duo_settings');
         add_settings_field('duo_ikey', 'Integration Key', 'duo_settings_ikey', 'duo_settings', 'duo_settings');
         add_settings_field('duo_skey', 'Secret Key', 'duo_settings_skey', 'duo_settings', 'duo_settings');
         add_settings_field('duo_host', 'Duo API Host', 'duo_settings_host', 'duo_settings', 'duo_settings');
-        register_setting('duo_settings', 'duo_ikey');
-        register_setting('duo_settings', 'duo_skey');
+        register_setting('duo_settings', 'duo_ikey', 'duo_ikey_validate');
+        register_setting('duo_settings', 'duo_skey', 'duo_skey_validate');
         register_setting('duo_settings', 'duo_host');
     }
 
