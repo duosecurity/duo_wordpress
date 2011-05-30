@@ -155,6 +155,36 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         echo "<input id='duo_host' name='duo_host' size='40' type='text' value='$host' />";
     }
 
+	function duo_settings_roles() {
+		global $wp_roles;
+
+		$selected = (get_option('duo_roles'));
+
+		foreach ($wp_roles->get_names() as $role){
+			//create checkbox for each role
+?>
+	<input id="duo_roles" name='duo_roles[<?php echo $role; ?>]' type='checkbox' value='<?php echo $role; ?>'  <?php if(in_array($role, $selected)) echo 'checked="checked"'; ?> /> <?php echo $role; ?> <br />
+<?php
+		}
+
+	}
+
+	function duo_roles_validate($options) {
+		//return empty array
+		if( !is_array( $options ) || empty( $options ) || ( false === $options ) )
+			return array();
+
+		global $wp_roles;
+		$valid_roles = $wp_roles->get_names();
+		//otherwise validate each role and then return the array
+		foreach($options as $opt){
+			if(!in_array($opt, $valid_roles)){
+				unset($options[$opt]);
+			}
+		}
+		return $options;
+	}
+
     function duo_settings_text() {
         echo "<p>To enable Duo two-factor authentication for your WordPress login, you need to configure your integration settings.</p>";
         echo "<p>You can retrieve your integration key and secret key by logging in to the Duo administrative interface.</p>";
@@ -185,9 +215,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         add_settings_field('duo_ikey', 'Integration Key', 'duo_settings_ikey', 'duo_settings', 'duo_settings');
         add_settings_field('duo_skey', 'Secret Key', 'duo_settings_skey', 'duo_settings', 'duo_settings');
         add_settings_field('duo_host', 'Duo API Host', 'duo_settings_host', 'duo_settings', 'duo_settings');
+		add_settings_field('duo_roles', 'Enable Duo for Roles:', 'duo_settings_roles', 'duo_settings', 'duo_settings');
         register_setting('duo_settings', 'duo_ikey', 'duo_ikey_validate');
         register_setting('duo_settings', 'duo_skey', 'duo_skey_validate');
         register_setting('duo_settings', 'duo_host');
+		register_setting('duo_settings', 'duo_roles', 'duo_roles_validate');
     }
 
     function duo_add_page() {
