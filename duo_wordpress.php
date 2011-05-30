@@ -158,12 +158,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	function duo_settings_roles() {
 		global $wp_roles;
 
-		$selected = (get_option('duo_roles'));
+		$selected = get_option('duo_roles', $wp_roles->get_names());
 
 		foreach ($wp_roles->get_names() as $role){
 			//create checkbox for each role
 ?>
-	<input id="duo_roles" name='duo_roles[<?php echo $role; ?>]' type='checkbox' value='<?php echo $role; ?>'  <?php if(in_array($role, $selected)) echo 'checked="checked"'; ?> /> <?php echo $role; ?> <br />
+	<input id="duo_roles" name='duo_roles[<?php echo strtolower($role); ?>]' type='checkbox' value='<?php echo $role; ?>'  <?php if(in_array($role, $selected)) echo 'checked="checked"'; ?> /> <?php echo $role; ?> <br />
 <?php
 		}
 
@@ -241,4 +241,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     add_filter('plugin_action_links', 'duo_add_link', 10, 2 );
     add_action('admin_menu', 'duo_add_page');
     add_action('admin_init', 'duo_admin_init');
+
+
+	//register_activation_hook( __FILE__, 'duo_activate' );
 ?>
