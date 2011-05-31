@@ -3,7 +3,7 @@ Contributors: duosecurity
 Tags: authentication, two-factor, login, username, password, duo, security
 Requires at least: 2.8
 Tested up to: 3.1.2
-Stable tag: 1.1.1
+Stable tag: 1.2
 
 This plugin enables Duo Security's two-factor authentication for WordPress logins.
 
@@ -31,7 +31,7 @@ Integrating Duo two-factor authentication with WordPress is a breeze. Follow the
 
 3. Install and activate the Duo WordPress plugin.
 
-4. In the plugin settings, fill in the "Integration Key" and "Secret Key" that corresponds to the integration you added in the Duo administrative interface.
+4. In the plugin settings, fill in the "Integration Key" and "Secret Key" that corresponds to the integration you added in the Duo administrative interface. Also, check the user roles that you'd like to require Duo login.
 
 5. Log out of your WordPress. Upon logging back in, you'll be prompted to enroll and authenticate using Duo's two-factor service.
 
@@ -57,6 +57,9 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Changelog ==
 
+= 1.2 =
+* Select which roles need to authenticate with Duo
+
 = 1.1.1 =
 * CSS fixes for IE 6, 7, and 8
 
@@ -67,6 +70,9 @@ If you're interested in protecting other web applications with Duo's two-factor 
 * Initial release!
 
 == Upgrade Notice ==
+
+= 1.2 =
+* Select which roles need to authenticate with Duo
 
 = 1.1.1 =
 * CSS fixes for IE 6, 7, and 8
