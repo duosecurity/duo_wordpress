@@ -90,19 +90,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             return;
         }
 
-        remove_action('authenticate', 'wp_authenticate_username_password', 20);
-
         if (isset($_POST['sig_response'])) {
+			remove_action('authenticate', 'wp_authenticate_username_password', 20);
             $sig = wp_hash($_POST['u'] . $_POST['exptime']);
             $expire = intval($_POST['exptime']);
 
             if (wp_hash($_POST['uhash']) == wp_hash($sig) && time() < $expire) {
                 $user = get_userdatabylogin($_POST['u']);
+
+
                 if ($user->user_login == Duo::verifyResponse(get_option('duo_skey'), $_POST['sig_response'])) {
                     wp_set_auth_cookie($user->ID);
                     wp_safe_redirect($_POST['redirect_to']);
                     exit();
                 }
+
             } else {
                 $user = new WP_Error('Duo authentication_failed', __('<strong>ERROR</strong>: Failed or expired two factor authentication'));
                 return $user;
@@ -110,12 +112,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
 
         if (strlen($username) > 0) {
-            $user = get_userdatabylogin($username);
+
+			$user = get_userdatabylogin($username);
+
+			$usr = new WP_User( $user->ID );
+			$duo_roles = get_option('duo_roles', array());
+			$duo_auth = false;
+			$roles = array();
+
+			if ( !empty( $usr->roles ) && is_array( $usr->roles ) ) {
+				foreach ( $usr->roles as $role ){
+					if(array_key_exists($role, $duo_roles))
+						$duo_auth = true;
+				}
+			}
+
+			if(!$duo_auth){
+				return;
+			}
+
+			remove_action('authenticate', 'wp_authenticate_username_password', 20);
 
             if (wp_check_password($password, $user->user_pass, $user-ID)) {
-                duo_sign_request($user, $_POST['redirect_to']);
-                exit();
-            } else {
+					duo_sign_request($user, $_POST['redirect_to']);
+					exit();
+			} 
+			else {
                 $user = new WP_Error('authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.'));
                 return $user;
             }
