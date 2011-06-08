@@ -91,7 +91,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
 
         if (isset($_POST['sig_response'])) {
-			remove_action('authenticate', 'wp_authenticate_username_password', 20);
+            remove_action('authenticate', 'wp_authenticate_username_password', 20);
             $sig = wp_hash($_POST['u'] . $_POST['exptime']);
             $expire = intval($_POST['exptime']);
 
@@ -112,32 +112,31 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
 
         if (strlen($username) > 0) {
+            $user = get_userdatabylogin($username);
 
-			$user = get_userdatabylogin($username);
+            $usr = new WP_User( $user->ID );
+            $duo_roles = get_option('duo_roles', array());
+            $duo_auth = false;
+            $roles = array();
 
-			$usr = new WP_User( $user->ID );
-			$duo_roles = get_option('duo_roles', array());
-			$duo_auth = false;
-			$roles = array();
+            if ( !empty( $usr->roles ) && is_array( $usr->roles ) ) {
+                foreach ( $usr->roles as $role ){
+                    if(array_key_exists($role, $duo_roles))
+                        $duo_auth = true;
+                }
+            }
 
-			if ( !empty( $usr->roles ) && is_array( $usr->roles ) ) {
-				foreach ( $usr->roles as $role ){
-					if(array_key_exists($role, $duo_roles))
-						$duo_auth = true;
-				}
-			}
+            if(!$duo_auth){
+                return;
+            }
 
-			if(!$duo_auth){
-				return;
-			}
-
-			remove_action('authenticate', 'wp_authenticate_username_password', 20);
+            remove_action('authenticate', 'wp_authenticate_username_password', 20);
 
             if (wp_check_password($password, $user->user_pass, $user-ID)) {
-					duo_sign_request($user, $_POST['redirect_to']);
-					exit();
-			} 
-			else {
+                    duo_sign_request($user, $_POST['redirect_to']);
+                    exit();
+            } 
+            else {
                 $user = new WP_Error('authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.'));
                 return $user;
             }
@@ -161,7 +160,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     function duo_settings_ikey() {
         $ikey = esc_attr(get_option('duo_ikey'));
-		echo "<input id='duo_ikey' name='duo_ikey' size='40' type='text' value='$ikey' />";
+        echo "<input id='duo_ikey' name='duo_ikey' size='40' type='text' value='$ikey' />";
     }
 
     function duo_settings_skey() {
@@ -177,35 +176,35 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         echo "<input id='duo_host' name='duo_host' size='40' type='text' value='$host' />";
     }
 
-	function duo_settings_roles() {
-		global $wp_roles;
+    function duo_settings_roles() {
+        global $wp_roles;
 
-		$selected = get_option('duo_roles', $wp_roles->get_names());
+        $selected = get_option('duo_roles', $wp_roles->get_names());
 
-		foreach ($wp_roles->get_names() as $role){
-			//create checkbox for each role
+        foreach ($wp_roles->get_names() as $role){
+            //create checkbox for each role
 ?>
-	<input id="duo_roles" name='duo_roles[<?php echo strtolower($role); ?>]' type='checkbox' value='<?php echo $role; ?>'  <?php if(in_array($role, $selected)) echo 'checked="checked"'; ?> /> <?php echo $role; ?> <br />
+    <input id="duo_roles" name='duo_roles[<?php echo strtolower($role); ?>]' type='checkbox' value='<?php echo $role; ?>'  <?php if(in_array($role, $selected)) echo 'checked="checked"'; ?> /> <?php echo $role; ?> <br />
 <?php
-		}
+        }
 
-	}
+    }
 
-	function duo_roles_validate($options) {
-		//return empty array
-		if( !is_array( $options ) || empty( $options ) || ( false === $options ) )
-			return array();
+    function duo_roles_validate($options) {
+        //return empty array
+        if( !is_array( $options ) || empty( $options ) || ( false === $options ) )
+            return array();
 
-		global $wp_roles;
-		$valid_roles = $wp_roles->get_names();
-		//otherwise validate each role and then return the array
-		foreach($options as $opt){
-			if(!in_array($opt, $valid_roles)){
-				unset($options[$opt]);
-			}
-		}
-		return $options;
-	}
+        global $wp_roles;
+        $valid_roles = $wp_roles->get_names();
+        //otherwise validate each role and then return the array
+        foreach($options as $opt){
+            if(!in_array($opt, $valid_roles)){
+                unset($options[$opt]);
+            }
+        }
+        return $options;
+    }
 
     function duo_settings_text() {
         echo "<p>If you don't yet have a Duo account, sign up now for free at <a target='_blank' href='http://www.duosecurity.com'>http://www.duosecurity.com</a>.</p>";
@@ -213,23 +212,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         echo "<p>You can retrieve your integration key, secret key, and API hostname by logging in to the Duo administrative interface.</p>";
     }
 
-	function duo_ikey_validate($ikey){
-		if (strlen($ikey) != 20) {
-			add_settings_error('duo_ikey', '', 'Integration key is not valid');
-			return "";
-		} else {
-			return $ikey;
-		}
-	}
-	
-	function duo_skey_validate($skey){
-		if (strlen($skey) != 40) {
-			add_settings_error('duo_skey', '', 'Secret key is not valid');
-			return "";
-		} else {
-			return $skey;
-		}
-	}
+    function duo_ikey_validate($ikey){
+        if (strlen($ikey) != 20) {
+            add_settings_error('duo_ikey', '', 'Integration key is not valid');
+            return "";
+        } else {
+            return $ikey;
+        }
+    }
+    
+    function duo_skey_validate($skey){
+        if (strlen($skey) != 40) {
+            add_settings_error('duo_skey', '', 'Secret key is not valid');
+            return "";
+        } else {
+            return $skey;
+        }
+    }
 
 
     function duo_admin_init() {
@@ -237,11 +236,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         add_settings_field('duo_ikey', 'Integration key', 'duo_settings_ikey', 'duo_settings', 'duo_settings');
         add_settings_field('duo_skey', 'Secret key', 'duo_settings_skey', 'duo_settings', 'duo_settings');
         add_settings_field('duo_host', 'API hostname', 'duo_settings_host', 'duo_settings', 'duo_settings');
-		add_settings_field('duo_roles', 'Enable Duo for Roles:', 'duo_settings_roles', 'duo_settings', 'duo_settings');
+        add_settings_field('duo_roles', 'Enable Duo for Roles:', 'duo_settings_roles', 'duo_settings', 'duo_settings');
         register_setting('duo_settings', 'duo_ikey', 'duo_ikey_validate');
         register_setting('duo_settings', 'duo_skey', 'duo_skey_validate');
         register_setting('duo_settings', 'duo_host');
-		register_setting('duo_settings', 'duo_roles', 'duo_roles_validate');
+        register_setting('duo_settings', 'duo_roles', 'duo_roles_validate');
     }
 
     function duo_add_page() {
@@ -263,7 +262,4 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     add_filter('plugin_action_links', 'duo_add_link', 10, 2 );
     add_action('admin_menu', 'duo_add_page');
     add_action('admin_init', 'duo_admin_init');
-
-
-	//register_activation_hook( __FILE__, 'duo_activate' );
 ?>
