@@ -210,7 +210,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     function duo_settings_text() {
         echo "<p>If you don't yet have a Duo account, sign up now for free at <a target='_blank' href='http://www.duosecurity.com'>http://www.duosecurity.com</a>.</p>";
         echo "<p>To enable Duo two-factor authentication for your WordPress login, you need to configure your integration settings.</p>";
-        echo "<p>You can retrieve your integration key and secret key by logging in to the Duo administrative interface.</p>";
+        echo "<p>You can retrieve your integration key, secret key, and API hostname by logging in to the Duo administrative interface.</p>";
     }
 
 	function duo_ikey_validate($ikey){
@@ -234,9 +234,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     function duo_admin_init() {
         add_settings_section('duo_settings', 'Main Settings', 'duo_settings_text', 'duo_settings');
-        add_settings_field('duo_ikey', 'Integration Key', 'duo_settings_ikey', 'duo_settings', 'duo_settings');
-        add_settings_field('duo_skey', 'Secret Key', 'duo_settings_skey', 'duo_settings', 'duo_settings');
-        add_settings_field('duo_host', 'Duo API Host', 'duo_settings_host', 'duo_settings', 'duo_settings');
+        add_settings_field('duo_ikey', 'Integration key', 'duo_settings_ikey', 'duo_settings', 'duo_settings');
+        add_settings_field('duo_skey', 'Secret key', 'duo_settings_skey', 'duo_settings', 'duo_settings');
+        add_settings_field('duo_host', 'API hostname', 'duo_settings_host', 'duo_settings', 'duo_settings');
 		add_settings_field('duo_roles', 'Enable Duo for Roles:', 'duo_settings_roles', 'duo_settings', 'duo_settings');
         register_setting('duo_settings', 'duo_ikey', 'duo_ikey_validate');
         register_setting('duo_settings', 'duo_skey', 'duo_skey_validate');
