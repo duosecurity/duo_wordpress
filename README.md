@@ -10,9 +10,9 @@ Duo provides simple two-factor authentication as a service via:
 4.  Duo mobile app for smartphone push authentication
 5.  Duo hardware token to generate one-time passcodes
 
-This WordPress plugin allows you to quickly add Duo's interactive, self-service, two-factor authentication to any WordPress instance.
+This WordPress plugin allows you to quickly add Duo's interactive, self-service, two-factor authentication to any WordPress login.
 
-# Installation/Usage
+# Usage
 
 Documentation: <http://www.duosecurity.com/docs/wordpress>
 
