@@ -31,10 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     function duo_sign_request($user, $redirect) {
         $ikey = get_option('duo_ikey');
         $skey = get_option('duo_skey');
-        $duo_host = get_option('duo_host');
-        if (!$duo_host) {
-            $duo_host = 'api-eval.duosecurity.com';
-        }
+        $host = get_option('duo_host');
        
         $username = $user->user_login;
 
@@ -60,7 +57,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             <script src="<?php echo plugins_url('duo_web/Duo-Web-v1.bundled.min.js', __FILE__); ?>"></script>
             <script>
             Duo.init({
-                'host': <?php echo "'" . $duo_host . "'"; ?>,
+                'host': <?php echo "'" . $host . "'"; ?>,
                 'post_action':'wp-login.php',
                 'sig_request':<?php echo "'" . $request_sig . "'"; ?>
             });
