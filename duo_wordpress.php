@@ -95,7 +95,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             if (wp_hash($_POST['uhash']) == wp_hash($sig) && time() < $expire) {
                 $user = get_userdatabylogin($_POST['u']);
 
-
                 if ($user->user_login == Duo::verifyResponse(get_option('duo_skey'), $_POST['sig_response'])) {
                     wp_set_auth_cookie($user->ID);
                     wp_safe_redirect($_POST['redirect_to']);
@@ -167,9 +166,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     function duo_settings_host() {
         $host = esc_attr(get_option('duo_host'));
-        if (!$host) {
-            $host = "api-eval.duosecurity.com";
-        }
         echo "<input id='duo_host' name='duo_host' size='40' type='text' value='$host' />";
     }
 
