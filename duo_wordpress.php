@@ -214,21 +214,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
 
 	function duo_ikey_validate($ikey){
-		if(strlen($ikey) != 20 || substr($ikey, 0, 2) !== "DI"){
+		if (strlen($ikey) != 20) {
 			add_settings_error('duo_ikey', '', 'Integration key is not valid');
 			return "";
-		}
-		else
+		} else {
 			return $ikey;
+		}
 	}
 	
 	function duo_skey_validate($skey){
-		if(strlen($skey) != 40){
+		if (strlen($skey) != 40) {
 			add_settings_error('duo_skey', '', 'Secret key is not valid');
 			return "";
-		}
-		else
+		} else {
 			return $skey;
+		}
 	}
 
 
