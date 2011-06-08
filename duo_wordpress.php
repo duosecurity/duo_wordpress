@@ -83,7 +83,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
     
     function duo_authenticate_user($user="", $username="", $password="") {
-        if (get_option("duo_ikey") == "" || get_option("duo_skey" == "")) {
+        if (get_option("duo_ikey") == "" || get_option("duo_skey" == "") || get_option("duo_host" == "")) {
             return;
         }
 
