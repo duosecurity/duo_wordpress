@@ -110,9 +110,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             $user = get_userdatabylogin($username);
 
             $usr = new WP_User($user->ID);
-            $duo_roles = get_option('duo_roles', array());
+
+			global $wp_roles;
+			foreach ($wp_roles->get_names() as $r) {
+				$all_roles[strtolower($r)] = ucfirst($r);
+			}
+
+            $duo_roles = get_option('duo_roles', $all_roles); 
             $duo_auth = false;
-            $roles = array();
 
             if (!empty($usr->roles) && is_array($usr->roles)) {
                 foreach ($usr->roles as $role) {
