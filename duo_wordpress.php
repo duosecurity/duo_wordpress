@@ -100,7 +100,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                     wp_safe_redirect($_POST['redirect_to']);
                     exit();
                 }
-
             } else {
                 $user = new WP_Error('Duo authentication_failed', __('<strong>ERROR</strong>: Failed or expired two factor authentication'));
                 return $user;
@@ -110,29 +109,29 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         if (strlen($username) > 0) {
             $user = get_userdatabylogin($username);
 
-            $usr = new WP_User( $user->ID );
+            $usr = new WP_User($user->ID);
             $duo_roles = get_option('duo_roles', array());
             $duo_auth = false;
             $roles = array();
 
-            if ( !empty( $usr->roles ) && is_array( $usr->roles ) ) {
-                foreach ( $usr->roles as $role ){
-                    if(array_key_exists($role, $duo_roles))
+            if (!empty($usr->roles) && is_array($usr->roles)) {
+                foreach ($usr->roles as $role) {
+                    if (array_key_exists($role, $duo_roles)) {
                         $duo_auth = true;
+                    }
                 }
             }
 
-            if(!$duo_auth){
+            if (!$duo_auth) {
                 return;
             }
 
             remove_action('authenticate', 'wp_authenticate_username_password', 20);
 
             if (wp_check_password($password, $user->user_pass, $user-ID)) {
-                    duo_sign_request($user, $_POST['redirect_to']);
-                    exit();
-            } 
-            else {
+                duo_sign_request($user, $_POST['redirect_to']);
+                exit();
+            } else {
                 $user = new WP_Error('authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.'));
                 return $user;
             }
@@ -174,7 +173,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
         $selected = get_option('duo_roles', $wp_roles->get_names());
 
-        foreach ($wp_roles->get_names() as $role){
+        foreach ($wp_roles->get_names() as $role) {
             //create checkbox for each role
 ?>
     <input id="duo_roles" name='duo_roles[<?php echo strtolower($role); ?>]' type='checkbox' value='<?php echo $role; ?>'  <?php if(in_array($role, $selected)) echo 'checked="checked"'; ?> /> <?php echo $role; ?> <br />
@@ -185,14 +184,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     function duo_roles_validate($options) {
         //return empty array
-        if( !is_array( $options ) || empty( $options ) || ( false === $options ) )
+        if (!is_array($options) || empty($options) || (false === $options)) {
             return array();
+        }
 
         global $wp_roles;
         $valid_roles = $wp_roles->get_names();
         //otherwise validate each role and then return the array
-        foreach($options as $opt){
-            if(!in_array($opt, $valid_roles)){
+        foreach ($options as $opt) {
+            if (!in_array($opt, $valid_roles)) {
                 unset($options[$opt]);
             }
         }
