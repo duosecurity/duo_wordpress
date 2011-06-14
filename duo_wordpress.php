@@ -83,7 +83,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
     
     function duo_authenticate_user($user="", $username="", $password="") {
-        if (get_option("duo_ikey") == "" || get_option("duo_skey" == "") || get_option("duo_host" == "")) {
+        if ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST ) 
+            return; //allows the XML-RPC protocol for remote publishing
+
+        if (get_option("duo_ikey", "") == "" || get_option("duo_skey", "") == "" || get_option("duo_host", "") == "") {
             return;
         }
 
@@ -256,8 +259,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         return $links;
     }
 
+    /*-------------XML-RPC Features-----------------*/
+
+
+
+    /*-------------Register WordPress Hooks-------------*/
+
     add_filter('authenticate', 'duo_authenticate_user', 10, 3);
     add_filter('plugin_action_links', 'duo_add_link', 10, 2 );
     add_action('admin_menu', 'duo_add_page');
     add_action('admin_init', 'duo_admin_init');
+
 ?>
