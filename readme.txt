@@ -3,7 +3,7 @@ Contributors: duosecurity
 Tags: authentication, two-factor, login, username, password, duo, security
 Requires at least: 2.8
 Tested up to: 3.1.2
-Stable tag: 1.3
+Stable tag: 1.3.1
 
 This plugin enables Duo Security's two-factor authentication for WordPress logins.
 
@@ -57,6 +57,9 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Changelog ==
 
+= 1.3.1 =
+* Fixed a bug with user roles
+
 = 1.3 =
 * Default all roles to enable Duo login for upgraded users (same as new installs).
 * Require the API hostname setting
@@ -76,10 +79,11 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Upgrade Notice ==
 
+= 1.3.1 =
+* Fixed a bug with user roles
+
 = 1.3 =
 * Default all roles to enable Duo login for upgraded users (same as new installs).
-* Require the API hostname setting
-* Code cleanups
 
 = 1.2 =
 * Select which roles need to authenticate with Duo
