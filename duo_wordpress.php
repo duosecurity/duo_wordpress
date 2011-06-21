@@ -116,7 +116,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 			global $wp_roles;
 			foreach ($wp_roles->get_names() as $r) {
-				$all_roles[strtolower($r)] = ucfirst($r);
+				$all_roles[strtolower(before_last_bar($r))] = ucfirst(before_last_bar($r));
 			}
 
             $duo_roles = get_option('duo_roles', $all_roles); 
@@ -124,7 +124,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
             if (!empty($usr->roles) && is_array($usr->roles)) {
                 foreach ($usr->roles as $role) {
-                    if (array_key_exists($role, $duo_roles)) {
+                    if (array_key_exists(strtolower(before_last_bar($role)), $duo_roles)) {
                         $duo_auth = true;
                     }
                 }
@@ -136,7 +136,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
             remove_action('authenticate', 'wp_authenticate_username_password', 20);
 
-            if (wp_check_password($password, $user->user_pass, $user-ID)) {
+            if (duo_check_login($username, $password, $user->ID)) {
                 duo_sign_request($user, $_POST['redirect_to']);
                 exit();
             } else {
@@ -145,6 +145,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             }
         }
     }
+
+	/* 
+	 * function duo_check_login
+	 * args: username and password
+	 * returns: true - if password matches one on file for user
+	 * returns: false - all other cases
+	 */
+	function duo_check_login($username, $password) {
+		$user = get_userdatabylogin($username);
+
+		if (wp_check_password($password, $user->user_pass, $user->ID)) {
+			return true;
+		}
+
+		return false;
+	}
 
     function duo_settings_page() {
 ?>
@@ -179,12 +195,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     function duo_settings_roles() {
         global $wp_roles;
 
-        $selected = get_option('duo_roles', $wp_roles->get_names());
+        $roles = $wp_roles->get_names();
+        $newroles = array();
+        foreach($roles as $key=>$role) {
+            $newroles[before_last_bar($key)] = before_last_bar($role);
+        }
+
+        $selected = get_option('duo_roles', $newroles);
 
         foreach ($wp_roles->get_names() as $role) {
             //create checkbox for each role
 ?>
-    <input id="duo_roles" name='duo_roles[<?php echo strtolower($role); ?>]' type='checkbox' value='<?php echo $role; ?>'  <?php if(in_array($role, $selected)) echo 'checked="checked"'; ?> /> <?php echo $role; ?> <br />
+    <input id="duo_roles" name='duo_roles[<?php echo strtolower(before_last_bar($role)); ?>]' type='checkbox' value='<?php echo before_last_bar($role); ?>'  <?php if(in_array(before_last_bar($role), $selected)) echo 'checked="checked"'; ?> /> <?php echo before_last_bar($role); ?> <br />
 <?php
         }
 
@@ -200,8 +222,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         $valid_roles = $wp_roles->get_names();
         //otherwise validate each role and then return the array
         foreach ($options as $opt) {
-            if (!in_array($opt, $valid_roles)) {
-                unset($options[$opt]);
+            if (!in_array(before_last_bar($opt), $valid_roles)) {
+                unset($options[before_last_bar($opt)]);
             }
         }
         return $options;
@@ -260,8 +282,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
 
     /*-------------XML-RPC Features-----------------*/
-
-
+    
 
     /*-------------Register WordPress Hooks-------------*/
 
