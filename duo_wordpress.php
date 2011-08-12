@@ -111,6 +111,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         if (strlen($username) > 0) {
             $user = get_userdatabylogin($username);
 
+            if (!$user) {
+                return;
+            }
+
             $usr = new WP_User($user->ID);
 
 			global $wp_roles;
