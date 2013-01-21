@@ -5,7 +5,7 @@ Requires at least: 3.0
 Tested up to: 3.5
 Stable tag: 1.4
 
-Enable two-factor authentication for your admins and/or users.
+Easily add Duo Security two-factor authentication to your WordPress website. Enable two-factor authentication for your admins and/or users.
 
 == Description ==
 [Watch our demo to see how easy it is to add Duo's two-factor authentication to your WordPress blog.](https://blog.duosecurity.com/2013/01/introducing-the-duo-5-minute-challenge/)
@@ -59,9 +59,9 @@ Yes, Duo is free up to 10 users and no credit card is required to get started! I
 If you're interested in protecting other web applications with Duo's two-factor authentication, check out [all our online documentation](https://www.duosecurity.com/docs) to see all of our drop-in integrations and to access our APIs and web SDK.
 
 == Screenshots ==
-1. The Duo Mobile application allows users to generate passcodes or use Duo Push to perform secondary authentication using their mobile device.
+1. Duo's WordPress plugin adds strong two-factor authentication to any WordPress login. You users will log in as usual with their primary credentials (their WordPress username and password). Then they’ll be  challenged to complete secondary authentication via Duo Push, phone callback, or one-time passcodes generated via the Duo Mobile app or delivered via SMS.
 
-2. Duo's WordPress plugin adds strong two-factor authentication to any WordPress login. You users will log in as usual with their primary credentials (their WordPress username and password). Then they’ll be  challenged to complete secondary authentication via Duo Push, phone callback, or one-time passcodes generated via the Duo Mobile app or delivered via SMS.
+2. The Duo Mobile application allows users to generate passcodes or use Duo Push to perform secondary authentication using their mobile device.
 
 == Changelog ==
 
