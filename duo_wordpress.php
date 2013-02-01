@@ -96,7 +96,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
     
     function duo_authenticate_user($user="", $username="", $password="") {
-        if ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST ) 
+        // play nicely with other plugins if they have higher priority than us
+        if (is_a($user, 'WP_User')) {
+            return $user;
+        }
+
+        if (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST) 
             return; //allows the XML-RPC protocol for remote publishing
 
         if (duo_get_option("duo_ikey", "") == "" || duo_get_option("duo_skey", "") == "" || duo_get_option("duo_host", "") == "") {
@@ -104,17 +109,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
 
         if (isset($_POST['sig_response'])) {
+            // secondary auth
             remove_action('authenticate', 'wp_authenticate_username_password', 20);
+
             $sig = wp_hash($_POST['u'] . $_POST['exptime']);
             $expire = intval($_POST['exptime']);
 
             if (wp_hash($_POST['uhash']) == wp_hash($sig) && time() < $expire) {
-                $user = get_userdatabylogin($_POST['u']);
+                $user = get_user_by('login', $_POST['u']);
 
                 if ($user->user_login == Duo::verifyResponse(duo_get_option('duo_skey'), $_POST['sig_response'])) {
-                    wp_set_auth_cookie($user->ID);
-                    wp_safe_redirect($_POST['redirect_to']);
-                    exit();
+                    return $user;
                 }
             } else {
                 $user = new WP_Error('Duo authentication_failed', __('<strong>ERROR</strong>: Failed or expired two factor authentication'));
@@ -123,18 +128,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
 
         if (strlen($username) > 0) {
-            $user = get_userdatabylogin($username);
-
+            // primary auth
+            $user = get_user_by('login', $username);
             if (!$user) {
                 return;
             }
 
-            $usr = new WP_User($user->ID);
-
-			global $wp_roles;
-			foreach ($wp_roles->get_names() as $k=>$r) {
-				$all_roles[$k] = $r;
-			}
+            global $wp_roles;
+            foreach ($wp_roles->get_names() as $k=>$r) {
+                $all_roles[$k] = $r;
+            }
 
             $duo_roles = duo_get_option('duo_roles', $all_roles); 
             $duo_auth = false;
@@ -150,8 +153,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 $duo_auth = true;
             }
 
-            if (!empty($usr->roles) && is_array($usr->roles)) {
-                foreach ($usr->roles as $role) {
+            if (!empty($user->roles) && is_array($user->roles)) {
+                foreach ($user->roles as $role) {
                     if (array_key_exists($role, $duo_roles)) {
                         $duo_auth = true;
                     }
@@ -163,32 +166,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             }
 
             remove_action('authenticate', 'wp_authenticate_username_password', 20);
-
-            if (duo_check_login($username, $password, $user->ID)) {
+            $user = wp_authenticate_username_password(NULL, $username, $password);
+            if (!is_a($user, 'WP_User')) {
+                // on error, return said error (and skip the remaining plugin chain)
+                return $user;
+            } else {
                 duo_sign_request($user, $_POST['redirect_to']);
                 exit();
-            } else {
-                $user = new WP_Error('authentication_failed', __('<strong>ERROR</strong>: Invalid username or incorrect password.'));
-                return $user;
             }
         }
     }
-
-	/* 
-	 * function duo_check_login
-	 * args: username and password
-	 * returns: true - if password matches one on file for user
-	 * returns: false - all other cases
-	 */
-	function duo_check_login($username, $password) {
-		$user = get_userdatabylogin($username);
-
-		if (wp_check_password($password, $user->user_pass, $user->ID)) {
-			return true;
-		}
-
-		return false;
-	}
 
     function duo_settings_page() {
 ?>
