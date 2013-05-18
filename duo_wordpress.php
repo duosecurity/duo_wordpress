@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
         $request_sig = Duo::signRequest($ikey, $skey, $username);
 
-        $exptime = time() + 3600; // let the duo login form expire within 1 hour
+        $exptime = duo_get_time() + 3600; // let the duo login form expire within 1 hour
 ?>
     <html>
         <head>
@@ -115,7 +115,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             $sig = wp_hash($_POST['u'] . $_POST['exptime']);
             $expire = intval($_POST['exptime']);
 
-            if (wp_hash($_POST['uhash']) == wp_hash($sig) && time() < $expire) {
+            if (wp_hash($_POST['uhash']) == wp_hash($sig) && duo_get_time() < $expire) {
                 $user = get_user_by('login', $_POST['u']);
 
                 if ($user->user_login == Duo::verifyResponse(duo_get_option('duo_skey'), $_POST['sig_response'])) {
@@ -378,13 +378,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
         return $links;
     }
-	
+
     function duo_uninstall() {
         delete_option('duo_ikey');
         delete_option('duo_skey');
         delete_option('duo_host');
         delete_option('duo_roles');
         delete_option('duo_xmlrpc');
+    }
+
+    /* Get Duo's system time.
+     * If that fails then use server system time
+     */
+    function duo_get_time() {
+        $duo_url = 'https://' . duo_get_option('duo_host') . '/auth/v2/ping';
+        $response = json_decode(file_get_contents($duo_url), true);
+        $time = (int)$response['response']['time'];
+        $time = ($time != NULL ? $time : time());
+        return $time;
     }
 
     /*-------------XML-RPC Features-----------------*/
