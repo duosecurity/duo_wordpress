@@ -379,14 +379,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         return $links;
     }
 
-    function duo_uninstall() {
-        delete_option('duo_ikey');
-        delete_option('duo_skey');
-        delete_option('duo_host');
-        delete_option('duo_roles');
-        delete_option('duo_xmlrpc');
-    }
-
     /* Get Duo's system time.
      * If that fails then use server system time
      */
@@ -419,8 +411,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         add_action('admin_menu', 'duo_add_page');
     }
     add_action('admin_init', 'duo_admin_init');
-
-    register_uninstall_hook(__FILE__, 'duo_uninstall');
 
     function duo_get_option($key, $default="") {
         if (is_multisite()) {
