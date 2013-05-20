@@ -3,7 +3,7 @@
 Plugin Name: Duo Two-Factor Authentication
 Plugin URI: http://wordpress.org/extend/plugins/duo-wordpress/
 Description: This plugin enables Duo two-factor authentication for WordPress logins.
-Version: 1.5
+Version: 1.5.1
 Author: Duo Security
 Author URI: http://www.duosecurity.com
 License: GPL2
@@ -35,9 +35,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
        
         $username = $user->user_login;
 
-        $request_sig = Duo::signRequest($ikey, $skey, $username);
+        $duo_time = duo_get_time();
+        $request_sig = Duo::signRequest($ikey, $skey, $username, $duo_time);
 
-        $exptime = duo_get_time() + 3600; // let the duo login form expire within 1 hour
+        $exptime = $duo_time + 3600; // let the duo login form expire within 1 hour
 ?>
     <html>
         <head>
@@ -115,10 +116,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             $sig = wp_hash($_POST['u'] . $_POST['exptime']);
             $expire = intval($_POST['exptime']);
 
-            if (wp_hash($_POST['uhash']) == wp_hash($sig) && duo_get_time() < $expire) {
+            $duo_time = duo_get_time();
+            if (wp_hash($_POST['uhash']) == wp_hash($sig) && $duo_time < $expire) {
                 $user = get_user_by('login', $_POST['u']);
 
-                if ($user->user_login == Duo::verifyResponse(duo_get_option('duo_skey'), $_POST['sig_response'])) {
+                if ($user->user_login == Duo::verifyResponse(duo_get_option('duo_skey'), $_POST['sig_response'], $duo_time)) {
                     return $user;
                 }
             } else {
@@ -383,8 +385,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
      * If that fails then use server system time
      */
     function duo_get_time() {
+        $context = stream_context_create(
+            array(
+                'http'=>array(
+                    "method" => "GET"
+                ),
+                'ssl'=>array(
+                    "allow_self_signed"=>false,
+                    "verify_peer"=>true
+                )
+            )
+        );
+
         $duo_url = 'https://' . duo_get_option('duo_host') . '/auth/v2/ping';
-        $response = json_decode(file_get_contents($duo_url), true);
+        $response = json_decode(file_get_contents($duo_url, false, $context), true);
         $time = (int)$response['response']['time'];
         $time = ($time != NULL ? $time : time());
         return $time;

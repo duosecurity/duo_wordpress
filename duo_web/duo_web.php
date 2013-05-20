@@ -5,10 +5,11 @@ class Duo {
     const REQUEST_EXPIRE = 300;
     const RESPONSE_PREFIX = "AUTH";
 
-    public static function signRequest($ikey, $skey, $username)
+    public static function signRequest($ikey, $skey, $username, $curTime=NULL)
     {
-        $expire = time() + self::REQUEST_EXPIRE;
-
+        $expire = ($curTime != NULL ? $curTime : time());
+        $expire += self::REQUEST_EXPIRE;
+            
         $val = sprintf("%s|%s|%s", $username, $ikey, $expire);
         $cookie = sprintf("%s|%s", self::REQUEST_PREFIX, base64_encode($val));
 
@@ -17,9 +18,9 @@ class Duo {
         return sprintf("%s|%s", $cookie, $sig);
     }
 
-    public static function verifyResponse($skey, $sig_response)
+    public static function verifyResponse($skey, $sig_response, $curTime=NULL)
     {
-        $ts = time();
+        $ts = ($curTime != NULL ? $curTime : time());
 
         list($u_prefix, $u_b64, $u_sig) = explode("|", $sig_response);
         $cookie = sprintf("%s|%s", $u_prefix, $u_b64);
