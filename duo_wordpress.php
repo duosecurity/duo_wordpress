@@ -3,7 +3,7 @@
 Plugin Name: Duo Two-Factor Authentication
 Plugin URI: http://wordpress.org/extend/plugins/duo-wordpress/
 Description: This plugin enables Duo two-factor authentication for WordPress logins.
-Version: 1.5.1
+Version: 1.5.2
 Author: Duo Security
 Author URI: http://www.duosecurity.com
 License: GPL2
@@ -385,14 +385,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
      * If that fails then use server system time
      */
     function duo_get_time() {
+        $certFile = dirname(__FILE__) . '/duo_web/ca_certs.pem';
         $context = stream_context_create(
             array(
                 'http'=>array(
                     "method" => "GET"
                 ),
                 'ssl'=>array(
-                    "allow_self_signed"=>false,
-                    "verify_peer"=>true
+                    'allow_self_signed'=>false,
+                    'verify_peer'=>true,
+                    'cafile'=>$certFile
                 )
             )
         );
