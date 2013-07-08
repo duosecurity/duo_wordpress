@@ -3,7 +3,7 @@ Contributors: duosecurity
 Tags: authentication, two-factor, authenticator, login, username, password, duo, security
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 
 Easily add Duo Security two-factor authentication to your WordPress website. Enable two-factor authentication for your admins and/or users.
 
@@ -65,8 +65,11 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Changelog ==
 
+= 1.5.3 =
+* Improve the way we ping Duo servers
+
 = 1.5.2 =
-* Included the root cert we validate agianst for better ssl certificate validation.
+* Included the root cert we validate agianst for better ssl certificate validation
 
 = 1.5.1 =
 * Add better SSL certificate validation when fetching server time
@@ -117,8 +120,11 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Upgrade Notice ==
 
+= 1.5.3 =
+* Improve the way we ping Duo servers
+
 = 1.5.2 =
-* Included the root cert we validate agianst for better ssl certificate validation.
+* Included the root cert we validate agianst for better ssl certificate validation
 
 = 1.5.1 =
 * Add better SSL certificate validation when fetching server time
