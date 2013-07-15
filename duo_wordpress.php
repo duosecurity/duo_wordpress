@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ?>
     <html>
         <head>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <?php
                 global $wp_version;
                 if(version_compare($wp_version, "3.3", "<=")){
@@ -77,19 +78,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             });
             </script>
 
-            <div style="width: 100%; text-align: center;">
-                <div style="width:500px; text-align: left;" id="login">
-                    <h1 style="text-align:center;"><a style="width: 500px;" href="http://wordpress.org/" title="Powered by WordPress"><?php echo get_bloginfo('name'); ?></a></h1>
-                    <div style="text-align: center;">
-                        <iframe id="duo_iframe" width="500" height="900" frameborder="0" allowtransparency="true" style="background: transparent;"></iframe>
-                    </div>
-                    <form method="POST" style="display:none;" id="duo_form">
-                        <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>"/>
-                        <input type="hidden" name="u" value="<?php echo esc_attr($username); ?>"/>
-                        <input type="hidden" name="exptime" value="<?php echo esc_attr($exptime); ?>"/>
-                        <input type="hidden" name="uhash" value="<?php echo esc_attr(wp_hash($username.$exptime)); ?>"/>
-                    </form>
-                </div>
+            <div style="width:620px;" id="login">
+                <h1>
+                    <a style="width:100%;" href="http://wordpress.org/" title="Powered by WordPress"><?php echo get_bloginfo('name'); ?></a>
+                </h1>
+                <iframe id="duo_iframe" width="620" height="500" frameborder="0" allowtransparency="true"></iframe>
+                <form method="POST" style="display:none;" id="duo_form">
+                    <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>"/>
+                    <input type="hidden" name="u" value="<?php echo esc_attr($username); ?>"/>
+                    <input type="hidden" name="exptime" value="<?php echo esc_attr($exptime); ?>"/>
+                    <input type="hidden" name="uhash" value="<?php echo esc_attr(wp_hash($username.$exptime)); ?>"/>
+                </form>
             </div>
         </body>
     </html>
