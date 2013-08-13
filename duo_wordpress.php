@@ -172,7 +172,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 // on error, return said error (and skip the remaining plugin chain)
                 return $user;
             } else {
-                duo_sign_request($user, $_POST['redirect_to']);
+                // Some custom themes do not provide the redirect_to value.
+                $redirect_to = isset( $_POST['redirect_to'] ) ? $_POST['redirect_to'] : wp_login_url();
+                duo_sign_request($user, $redirect_to);
                 exit();
             }
         }
