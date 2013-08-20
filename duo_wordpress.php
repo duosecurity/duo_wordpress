@@ -172,8 +172,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 // on error, return said error (and skip the remaining plugin chain)
                 return $user;
             } else {
-                // Some custom themes do not provide the redirect_to value.
-                $redirect_to = isset( $_POST['redirect_to'] ) ? $_POST['redirect_to'] : wp_login_url();
+                // Some custom themes do not provide the redirect_to value
+                // Admin page is a good default
+                $admin_url = is_multisite() ? network_admin_url() : admin_url();
+                $redirect_to = isset( $_POST['redirect_to'] ) ? $_POST['redirect_to'] : $admin_url;
                 duo_sign_request($user, $redirect_to);
                 exit();
             }
@@ -206,7 +208,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     function duo_settings_skey() {
         $skey = esc_attr(duo_get_option('duo_skey'));
-        echo "<input id='duo_skey' name='duo_skey' size='40' type='text' value='$skey' />";
+        echo "<input id='duo_skey' name='duo_skey' size='40' type='password' value='$skey' autocomplete='off' />";
     }
 
     function duo_settings_host() {
