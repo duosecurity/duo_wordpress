@@ -2,8 +2,8 @@
 Contributors: duosecurity
 Tags: authentication, two-factor, authenticator, login, username, password, duo, security
 Requires at least: 3.0
-Tested up to: 3.5.2
-Stable tag: 1.6
+Tested up to: 3.6.1
+Stable tag: 1.6.1
 
 Easily add Duo Security two-factor authentication to your WordPress website. Enable two-factor authentication for your admins and/or users.
 
@@ -65,6 +65,13 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Changelog ==
 
+= 1.6.1 =
+* Add support for Wordpress 3.6.1
+* Fix an issue that prevented admins from disabling XMLRPC on multisite instances
+* Remove Duo configurations when the plugin is uninstalled from a multisite wordpress instance
+* Better support for some custom themes
+* Make Duo skey setting a password field
+
 = 1.6 =
 * Add support for Duo's new user enrollment frame
 
@@ -122,6 +129,13 @@ If you're interested in protecting other web applications with Duo's two-factor 
 * Initial release!
 
 == Upgrade Notice ==
+
+= 1.6.1 =
+* Add support for Wordpress 3.6.1
+* Fix an issue that prevented admins from disabling XMLRPC on multisite instances
+* Remove Duo configurations when the plugin is uninstalled from a multisite wordpress instance
+* Better support for some custom themes
+* Make Duo skey setting a password field
 
 = 1.6 =
 * Added support for Duo's new enrollment frame.
