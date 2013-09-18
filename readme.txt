@@ -67,7 +67,7 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 = 1.6.1 =
 * Add support for Wordpress 3.6.1
-* Fix an issue that prevented admins from disabling XMLRPC on multisite instances
+* Fix an issue that prevented admins from enabling XMLRPC on multisite instances
 * Remove Duo configurations when the plugin is uninstalled from a multisite wordpress instance
 * Better support for some custom themes
 * Make Duo skey setting a password field
@@ -132,7 +132,7 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 = 1.6.1 =
 * Add support for Wordpress 3.6.1
-* Fix an issue that prevented admins from disabling XMLRPC on multisite instances
+* Fix an issue that prevented admins from enabling XMLRPC on multisite instances
 * Remove Duo configurations when the plugin is uninstalled from a multisite wordpress instance
 * Better support for some custom themes
 * Make Duo skey setting a password field
