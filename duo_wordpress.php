@@ -94,6 +94,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     </html>
 <?php
     }
+
+    function duo_get_roles(){
+        global $wp_roles;
+        // $wp_roles may not be initially set if wordpress < 3.3
+        $wp_roles = isset($wp_roles) ? $wp_roles : new WP_Roles();
+        return $wp_roles;
+    }
     
     function duo_authenticate_user($user="", $username="", $password="") {
         // play nicely with other plugins if they have higher priority than us
@@ -117,7 +124,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
             $duo_time = duo_get_time();
             if (wp_hash($_POST['uhash']) == wp_hash($sig) && $duo_time < $expire) {
-                $user = get_user_by('login', $_POST['u']);
+                // Don't use get_user_by(). It doesn't return a WP_User object if wordpress version < 3.3
+                $user = new WP_User(0, $_POST['u']);
 
                 if ($user->user_login == Duo::verifyResponse(duo_get_option('duo_skey'), $_POST['sig_response'], $duo_time)) {
                     return $user;
@@ -130,12 +138,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
         if (strlen($username) > 0) {
             // primary auth
-            $user = get_user_by('login', $username);
+            // Don't use get_user_by(). It doesn't return a WP_User object if wordpress version < 3.3
+            $user = new WP_User(0, $username);
             if (!$user) {
                 return;
             }
 
-            global $wp_roles;
+            $wp_roles = duo_get_roles();
             foreach ($wp_roles->get_names() as $k=>$r) {
                 $all_roles[$k] = $r;
             }
@@ -217,8 +226,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
 
     function duo_settings_roles() {
-        global $wp_roles;
-
+        $wp_roles = duo_get_roles();
         $roles = $wp_roles->get_names();
         $newroles = array();
         foreach($roles as $key=>$role) {
@@ -243,7 +251,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             return array();
         }
 
-        global $wp_roles;
+        $wp_roles = duo_get_roles();
+
         $valid_roles = $wp_roles->get_names();
         //otherwise validate each role and then return the array
         foreach ($options as $opt) {
@@ -255,8 +264,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
 
     function duo_settings_text() {
-        echo "<p>If you don't yet have a Duo account, sign up now for free at <a target='_blank' href='http://www.duosecurity.com'>http://www.duosecurity.com</a>.</p>";
-        echo "<p>To enable Duo two-factor authentication for your WordPress login, you need to configure your integration settings.</p>";
+        echo "<p>See the <a target='_blank' href='https://www.duosecurity.com/docs/wordpress'>Duo for WordPress guide</a> to enable Duo two-factor authentication for your WordPress logins.</p>";
         echo "<p>You can retrieve your integration key, secret key, and API hostname by logging in to the Duo administrative interface.</p>";
     }
 
@@ -294,20 +302,29 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         return 'on';
     }
 
+
+    function duo_add_site_option($option, $value = '') {
+        // Add multisite option only if it doesn't exist already
+        // With Wordpress versions < 3.3, calling add_site_option will override old values
+        if (duo_get_option($option) === FALSE){
+            add_site_option($option, $value);
+        }
+    }
+
     function duo_admin_init() {
         if (is_multisite()) {
-            global $wp_roles;
+            $wp_roles = duo_get_roles();
             $roles = $wp_roles->get_names();
             $allroles = array();
             foreach($roles as $key=>$role) {
                 $allroles[before_last_bar($key)] = before_last_bar($role);
             }
-
-            add_site_option('duo_ikey', '');
-            add_site_option('duo_skey', '');
-            add_site_option('duo_host', '');
-            add_site_option('duo_roles', $allroles);
-            add_site_option('duo_xmlrpc', 'off');
+            
+            duo_add_site_option('duo_ikey', '');
+            duo_add_site_option('duo_skey', '');
+            duo_add_site_option('duo_host', '');
+            duo_add_site_option('duo_roles', $allroles);
+            duo_add_site_option('duo_xmlrpc', 'off');
         }
         else {
             add_settings_section('duo_settings', 'Main Settings', 'duo_settings_text', 'duo_settings');
@@ -490,16 +507,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     add_filter('authenticate', 'duo_authenticate_user', 10, 3);
     add_filter('plugin_action_links', 'duo_add_link', 10, 2 );
-    if(is_multisite() && is_network_admin()){
-        add_action('network_admin_menu', 'duo_add_page');
-        
-        // Custom fields in network settings
-        add_filter('wpmu_options', 'duo_mu_options');
-        add_filter('update_wpmu_options', 'duo_update_mu_options');
-    }
-    else {
-        add_action('admin_menu', 'duo_add_page');
-    }
+    
+    //add single-site submenu option
+    add_action('admin_menu', 'duo_add_page');
+
+    // Custom fields in network settings
+    add_action('wpmu_options', 'duo_mu_options');
+    add_action('update_wpmu_options', 'duo_update_mu_options');
+
     add_action('admin_init', 'duo_admin_init');
 
     function duo_get_option($key, $default="") {
