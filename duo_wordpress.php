@@ -203,7 +203,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             <?php settings_fields('duo_settings'); ?>
             <?php do_settings_sections('duo_settings'); ?> 
             <p class="submit">
-                <input name="Submit" type="submit" value="<?php esc_attr_e('Save Changes'); ?>" />
+                <input name="Submit" type="submit" class="button primary-button" value="<?php esc_attr_e('Save Changes'); ?>" />
             </p>
         </form>
     </div>
