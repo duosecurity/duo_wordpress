@@ -10,7 +10,7 @@ License: GPL2
 */
 
 /*
-Copyright 2011 Duo Security <duo_web@duosecurity.com>
+Copyright 2014 Duo Security <duo_web@duosecurity.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License, version 2, as 
@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         $request_sig = Duo::signRequest($ikey, $skey, $username, $duo_time);
 
         $exptime = $duo_time + 3600; // let the duo login form expire within 1 hour
+
 ?>
     <html>
         <head>
@@ -46,21 +47,35 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             <?php
                 global $wp_version;
                 if(version_compare($wp_version, "3.3", "<=")){
-            ?>
-                    <link rel="stylesheet" type="text/css" href="<?php echo admin_url('css/login.css'); ?>" />
-            <?php
+                    echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/login.css') . '" />';
                 }
-                else{
-            ?>
-                    <link rel="stylesheet" type="text/css" href="<?php echo admin_url('css/wp-admin.css'); ?>" />
-                    <link rel="stylesheet" type="text/css" href="<?php echo admin_url('css/colors-fresh.css'); ?>" />
-            <?php
+                else if(version_compare($wp_version, "3.7", "<=")){
+                    echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/wp-admin.css') . '" />';
+                    echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/colors-fresh.css') . '" />';
+                }
+                else {
+                    echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/wp-admin.css') . '" />';
+                    echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/colors.css') . '" />';
                 }
             ?>
 
             <style>
                 body {
-                    background:#F9F9F9;
+                    background: #f1f1f1;
+                }
+                .centerHeader {
+                    width: 100%;
+                    padding-top: 8%;
+                }
+                #WPLogo {
+                    width: 100%;
+                }
+                #duo_iframe {
+                    width: 90%;
+                    height: 500px;
+                    max-width: 620px;
+                    display: table;
+                    margin: 0 auto;
                 }
                 div {
                     background: transparent;
@@ -78,18 +93,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             });
             </script>
 
-            <div style="width:620px;" id="login">
-                <h1>
-                    <a style="width:100%;" href="http://wordpress.org/" title="Powered by WordPress"><?php echo get_bloginfo('name'); ?></a>
-                </h1>
-                <iframe id="duo_iframe" width="620" height="500" frameborder="0" allowtransparency="true"></iframe>
-                <form method="POST" style="display:none;" id="duo_form">
-                    <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>"/>
-                    <input type="hidden" name="u" value="<?php echo esc_attr($username); ?>"/>
-                    <input type="hidden" name="exptime" value="<?php echo esc_attr($exptime); ?>"/>
-                    <input type="hidden" name="uhash" value="<?php echo esc_attr(wp_hash($username.$exptime)); ?>"/>
-                </form>
-            </div>
+            <h1 class="centerHeader">
+                <a href="http://wordpress.org/" id="WPLogo" title="Powered by WordPress"><?php echo get_bloginfo('name'); ?></a>
+            </h1>
+            <iframe id="duo_iframe" frameborder="0" allowtransparency="true"></iframe>
+            <form method="POST" style="display:none;" id="duo_form">
+                <input type="hidden" name="u" value="<?php echo esc_attr($username); ?>"/>
+                <input type="hidden" name="exptime" value="<?php echo esc_attr($exptime); ?>"/>
+                <input type="hidden" name="uhash" value="<?php echo esc_attr(wp_hash($username.$exptime)); ?>"/>
+                <?php
+                if (isset($_REQUEST['interim-login'])){
+                    echo '<input type="hidden" name="interim-login" value="1"/>';
+                }
+                else {
+                    echo '<input type="hidden" name="redirect_to" value="' . esc_attr($redirect) . '"/>';
+                }
+                ?>
+            </form>
         </body>
     </html>
 <?php
