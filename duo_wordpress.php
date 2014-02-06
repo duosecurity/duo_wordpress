@@ -88,7 +88,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             <script>
             Duo.init({
                 'host': <?php echo "'" . $host . "'"; ?>,
-                'post_action': '<?php echo esc_url(network_site_url('wp-login.php', 'login_post')) ?>',
+                'post_action': '<?php echo esc_url(site_url('wp-login.php', 'login_post')) ?>',
                 'sig_request':<?php echo "'" . $request_sig . "'"; ?>
             });
             </script>
