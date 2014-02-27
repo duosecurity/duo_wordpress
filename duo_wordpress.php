@@ -564,7 +564,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     function duo_unset_cookie(){
         global $DuoAuthCookieName;
         setcookie($DuoAuthCookieName, '', strtotime('-1 day'), COOKIEPATH, COOKIE_DOMAIN);
-        error_log("unset: $DuoAuthCookieName" );
     }
 
     function duo_verify_sig($cookie, $u_sig){
