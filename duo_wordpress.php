@@ -102,6 +102,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 <input type="hidden" name="u" value="<?php echo esc_attr($username); ?>"/>
                 <input type="hidden" name="exptime" value="<?php echo esc_attr($exptime); ?>"/>
                 <input type="hidden" name="uhash" value="<?php echo esc_attr(wp_hash($username.$exptime)); ?>"/>
+                <input type="hidden" name="rememberme" value="<?php echo esc_attr($_POST['rememberme'])?>"/>
                 <?php
                 if (isset($_REQUEST['interim-login'])){
                     echo '<input type="hidden" name="interim-login" value="1"/>';
@@ -590,6 +591,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     */
         global $DuoAuthCookieName;
         if(!isset($_COOKIE[$DuoAuthCookieName])){
+            error_log("Duo cookie not set. Start two factor authentication");
             return false;
         }
 
