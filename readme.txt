@@ -66,7 +66,7 @@ If you're interested in protecting other web applications with Duo's two-factor 
 == Changelog ==
 
 = 2.0 =
-* Fix an issue that allowed some users to bypass 2FA
+* Fix an issue that allowed some users to bypass 2FA on multisite networks
 
 = 1.8.1 =
 * Fix multi-site login issue
@@ -149,7 +149,7 @@ If you're interested in protecting other web applications with Duo's two-factor 
 == Upgrade Notice ==
 
 = 2.0 =
-* Fix an issue that allowed some users to bypass 2FA
+* Fix an issue that allowed some users to bypass 2FA on multisite networks
 * Notice that now when enabling the plugin, you will immediately get prompted for two factor
 
 = 1.8.1 =
