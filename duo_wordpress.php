@@ -480,25 +480,28 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
 
     function duo_get_time_fopen($duo_url, $cert_file){
-        $context = stream_context_create(
-            array(
-                'http'=>array(
-                    "method" => "GET"
-                ),
-                'ssl'=>array(
-                    'allow_self_signed'=>false,
-                    'verify_peer'=>true,
-                    'cafile'=>$cert_file
-                )
-            )
+        $settings = array(
+                        'http'=>array(
+                            'method' => 'GET'
+                        ),
+                        'ssl'=>array(
+                            'allow_self_signed'=>false,
+                            'verify_peer'=>true,
+                            'cafile'=>$cert_file
+                        )
         );
 
+        if ( defined('WP_PROXY_HOST') && defined('WP_PROXY_PORT')) {
+            $settings['http']['proxy'] = 'tcp://' . WP_PROXY_HOST . ':' . WP_PROXY_PORT;
+        }
+
+        $context = stream_context_create($settings);
         $response = json_decode(file_get_contents($duo_url, false, $context), true);
         if (!$response){
             return NULL;
         }
         $time = (int)$response['response']['time'];
-        
+
         return $time;
     }
 
@@ -510,6 +513,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         curl_setopt($ch, CURLOPT_CAINFO, $cert_file);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+
+        if ( defined('WP_PROXY_HOST') && defined('WP_PROXY_PORT')) {
+            curl_setopt( $handle, CURLOPT_PROXYTYPE, CURLPROXY_HTTP );
+            curl_setopt( $handle, CURLOPT_PROXY, WP_PROXY_HOST );
+            curl_setopt( $handle, CURLOPT_PROXYPORT, WP_PROXY_PORT );
+        }
+
         $response =json_decode(curl_exec($ch), true);
         curl_close ($ch);
         if (!$response){
