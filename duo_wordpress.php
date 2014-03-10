@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         $username = $user->user_login;
 
         $duo_time = duo_get_time();
-        $request_sig = Duo::signRequest($ikey, $skey, $username, $duo_time);
+        $request_sig = Duo::signRequest($ikey, $skey, wp_salt(), $username, $duo_time);
 
         $exptime = $duo_time + 3600; // let the duo login form expire within 1 hour
 
@@ -207,6 +207,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 $user = new WP_User(0, $_POST['u']);
 
                 if ($user->user_login == Duo::verifyResponse(duo_get_option('duo_skey'),
+                                                             wp_salt(),
                                                              $_POST['sig_response'],
                                                              $duo_time)) {
                     duo_set_cookie($user);
