@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     require_once('duo_web/duo_web.php');
     $DuoAuthCookieName = 'duo_wordpress_auth_cookie';
+    $DuoDebug = false;
 
     function duo_sign_request($user, $redirect) {
         $ikey = duo_get_option('duo_ikey');
@@ -38,6 +39,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
         $duo_time = duo_get_time();
         $request_sig = Duo::signRequest($ikey, $skey, wp_salt(), $username, $duo_time);
+
+        duo_debug_log("Displaying iFrame. Username: $username cookie domain: " . COOKIE_DOMAIN . " redirect_to_url: $redirect ikey: $ikey host: $host duo_time: $duo_time");
+        duo_debug_log("Duo request signature: $request_sig");
 
 ?>
     <html>
@@ -121,6 +125,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     function duo_auth_enabled(){
         if (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST) { 
+            duo_debug_log('Found an XMLRPC request. XMLRPC is allowed for this site. Skipping second factor');
             return false; //allows the XML-RPC protocol for remote publishing
         }
 
@@ -186,6 +191,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
 
         if (! duo_auth_enabled()){
+            duo_debug_log('Duo not enabled, skipping 2FA.');
             return;
         }
 
@@ -204,6 +210,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 $user = new WP_User(0, $username);
 
                 duo_set_cookie($user);
+
+                duo_debug_log("Second factor successful for user: $username");
                 return $user;
             } else {
                 $user = new WP_Error('Duo authentication_failed',
@@ -217,9 +225,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             // Don't use get_user_by(). It doesn't return a WP_User object if wordpress version < 3.3
             $user = new WP_User(0, $username);
             if (!$user) {
+                error_log("Failed to retrieve WP user $username");
                 return;
             }
             if(!duo_role_require_mfa($user)){
+                duo_debug_log("Skipping 2FA for user: $username with roles: " . print_r($user->roles, true));
                 return;
             }
 
@@ -229,12 +239,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 // on error, return said error (and skip the remaining plugin chain)
                 return $user;
             } else {
+                duo_debug_log("Primary auth succeeded, starting second factor for $username");
                 duo_start_second_factor($user);
             }
         }
+        duo_debug_log('Starting primary authentication');
     }
 
     function duo_settings_page() {
+        duo_debug_log('Displaying duo setting page');
 ?>
     <div class="wrap">
         <h2>Duo Two-Factor Authentication</h2>
@@ -548,7 +561,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
     }
 
-    
     function duo_set_cookie($user){
 
         global $DuoAuthCookieName;
@@ -561,13 +573,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
         $cookie_set = setcookie($DuoAuthCookieName, $cookie, 0, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
         if (! $cookie_set){
-            error_log('Failed to set duo cookie');
+            error_log("Failed to set duo cookie for user: $user->user_login");
         }
+        duo_debug_log("Set Duo cookie for user: $user->user_login path: " . COOKIEPATH . " on domain: " . COOKIE_DOMAIN);
     }
 
     function duo_unset_cookie(){
         global $DuoAuthCookieName;
         setcookie($DuoAuthCookieName, '', strtotime('-1 day'), COOKIEPATH, COOKIE_DOMAIN);
+        duo_debug_log("Unset Duo cookie for path: " . COOKIEPATH . " on domain: " . COOKIE_DOMAIN);
     }
 
     function duo_verify_sig($cookie, $u_sig){
@@ -641,11 +655,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         Verify the user is authenticated with Duo. Start 2FA otherwise
     */
         if (! duo_auth_enabled()){
+            duo_debug_log('Duo not enabled, skip cookie check.');
             return;
         }
 
         if (duo_role_require_mfa($user) and !duo_verify_cookie($user)){
+            duo_debug_log("Duo cookie invalid for user: $user->user_login");
             duo_start_second_factor($user, duo_get_uri());
+        }
+    }
+
+    function duo_debug_log($message) {
+        global $DuoDebug;
+        if ($DuoDebug) {
+            error_log('Duo debug: ' . $message);
         }
     }
 
