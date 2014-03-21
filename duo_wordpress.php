@@ -39,8 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         $duo_time = duo_get_time();
         $request_sig = Duo::signRequest($ikey, $skey, wp_salt(), $username, $duo_time);
 
-        $exptime = $duo_time + 3600; // let the duo login form expire within 1 hour
-
 ?>
     <html>
         <head>
@@ -99,9 +97,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             </h1>
             <iframe id="duo_iframe" frameborder="0" allowtransparency="true"></iframe>
             <form method="POST" style="display:none;" id="duo_form">
-                <input type="hidden" name="u" value="<?php echo esc_attr($username); ?>"/>
-                <input type="hidden" name="exptime" value="<?php echo esc_attr($exptime); ?>"/>
-                <input type="hidden" name="uhash" value="<?php echo esc_attr(wp_hash($username.$exptime)); ?>"/>
                 <input type="hidden" name="rememberme" value="<?php echo esc_attr($_POST['rememberme'])?>"/>
                 <?php
                 if (isset($_REQUEST['interim-login'])){
@@ -198,21 +193,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             // secondary auth
             remove_action('authenticate', 'wp_authenticate_username_password', 20);
 
-            $sig = wp_hash($_POST['u'] . $_POST['exptime']);
-            $expire = intval($_POST['exptime']);
-
             $duo_time = duo_get_time();
-            if (wp_hash($_POST['uhash']) == wp_hash($sig) && $duo_time < $expire) {
+            $username = Duo::verifyResponse(duo_get_option('duo_ikey'),
+                                            duo_get_option('duo_skey'),
+                                            wp_salt(),
+                                            $_POST['sig_response'],
+                                            $duo_time);
+            if ($username) {
                 // Don't use get_user_by(). It doesn't return a WP_User object if wordpress version < 3.3
-                $user = new WP_User(0, $_POST['u']);
+                $user = new WP_User(0, $username);
 
-                if ($user->user_login == Duo::verifyResponse(duo_get_option('duo_skey'),
-                                                             wp_salt(),
-                                                             $_POST['sig_response'],
-                                                             $duo_time)) {
-                    duo_set_cookie($user);
-                    return $user;
-                }
+                duo_set_cookie($user);
+                return $user;
             } else {
                 $user = new WP_Error('Duo authentication_failed',
                                      __('<strong>ERROR</strong>: Failed or expired two factor authentication'));
@@ -564,7 +556,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         $username_b64 = base64_encode($user->user_login);
         $expire = strtotime('+48 hours');
         $val = base64_encode(sprintf("%s|%s|%s|%s", $DuoAuthCookieName, $username_b64, $ikey_b64, $expire)); 
-        $sig = hash_hmac("sha1", $val, wp_salt());
+        $sig = duo_hash_hmac($val);
         $cookie = sprintf("%s|%s", $val, $sig);
 
         $cookie_set = setcookie($DuoAuthCookieName, $cookie, 0, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
@@ -579,8 +571,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
 
     function duo_verify_sig($cookie, $u_sig){
-        $sig = hash_hmac('sha1', $cookie, wp_salt());
-        if (hash_hmac('sha1', $sig, wp_salt()) === hash_hmac('sha1', $u_sig, wp_salt())) {
+        $sig = duo_hash_hmac($cookie);
+        if (duo_hash_hmac($sig) === duo_hash_hmac($u_sig)) {
             return true;
         }
         return false;
@@ -655,6 +647,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         if (duo_role_require_mfa($user) and !duo_verify_cookie($user)){
             duo_start_second_factor($user, duo_get_uri());
         }
+    }
+
+    function duo_hash_hmac($data){
+        return hash_hmac('sha1', $data, wp_salt());
     }
 
     /*-------------XML-RPC Features-----------------*/
