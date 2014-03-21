@@ -650,7 +650,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
     }
 
-    function duo_verify_auth($cookie_elements, $user){
+    function duo_verify_auth(){
     /*
         Verify the user is authenticated with Duo. Start 2FA otherwise
     */
@@ -659,9 +659,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             return;
         }
 
-        if (duo_role_require_mfa($user) and !duo_verify_cookie($user)){
-            duo_debug_log("Duo cookie invalid for user: $user->user_login");
-            duo_start_second_factor($user, duo_get_uri());
+        if(is_user_logged_in()){
+            $user = wp_get_current_user();
+            duo_debug_log("Verifying second factor for user: $user->user_login URL: " .  duo_get_uri() . ' cookie domain: ' . COOKIE_DOMAIN);
+            if (duo_role_require_mfa($user) and !duo_verify_cookie($user)){
+                duo_debug_log("Duo cookie invalid for user: $user->user_login");
+                duo_start_second_factor($user, duo_get_uri());
+            }
+            duo_debug_log("User $user->user_login allowed");
         }
     }
 
@@ -688,7 +693,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         add_filter('plugin_action_links', 'duo_add_link', 10, 2 );
     }
 
-    add_action('auth_cookie_valid', 'duo_verify_auth', 10, 2);
+    add_action('init', 'duo_verify_auth', 10);
 
     add_action('clear_auth_cookie', 'duo_unset_cookie', 10);
 
