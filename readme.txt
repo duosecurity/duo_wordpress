@@ -3,7 +3,7 @@ Contributors: duosecurity
 Tags: authentication, two-factor, authenticator, login, username, password, duo, security
 Requires at least: 3.0
 Tested up to: 3.8.1
-Stable tag: 2.0
+Stable tag: 2.1
 
 Easily add Duo Security two-factor authentication to your WordPress website. Enable two-factor authentication for your admins and/or users.
 
@@ -64,6 +64,14 @@ If you're interested in protecting other web applications with Duo's two-factor 
 2. The Duo Mobile application allows users to generate passcodes or use Duo Push to perform secondary authentication using their mobile device.
 
 == Changelog ==
+
+= 2.1 =
+* Fix an issue that caused 503 errors for some users
+* Add support for proxy servers
+* Fix an issue where the "Remember Me" checkbox on the login page was being ignored
+* Use an application-specific key when signing Duo requests
+* Add debug mode which enables verbose logging
+* Remove unnecessary assets to reduce package size
 
 = 2.0 =
 * Fix an issue that allowed some users to bypass 2FA on multisite networks
@@ -147,6 +155,15 @@ If you're interested in protecting other web applications with Duo's two-factor 
 * Initial release!
 
 == Upgrade Notice ==
+
+= 2.1 =
+* Please disable the plugin before updating. Make sure to enable the plugin when upgrade is done
+* Fix an issue that caused 503 errors for some users
+* Add support for proxy servers
+* Fix an issue where the "Remember Me" checkbox on the login page was being ignored
+* Use an application-specific key when signing Duo requests
+* Add debug mode which enables verbose logging
+* Remove unnecessary assets to reduce package size
 
 = 2.0 =
 * Fix an issue that allowed some users to bypass 2FA on multisite networks
