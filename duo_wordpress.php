@@ -523,9 +523,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 
         if ( defined('WP_PROXY_HOST') && defined('WP_PROXY_PORT')) {
-            curl_setopt( $handle, CURLOPT_PROXYTYPE, CURLPROXY_HTTP );
-            curl_setopt( $handle, CURLOPT_PROXY, WP_PROXY_HOST );
-            curl_setopt( $handle, CURLOPT_PROXYPORT, WP_PROXY_PORT );
+            curl_setopt( $ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP );
+            curl_setopt( $ch, CURLOPT_PROXY, WP_PROXY_HOST );
+            curl_setopt( $ch, CURLOPT_PROXYPORT, WP_PROXY_PORT );
         }
 
         $response =json_decode(curl_exec($ch), true);
