@@ -34,12 +34,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         $ikey = duo_get_option('duo_ikey');
         $skey = duo_get_option('duo_skey');
         $host = duo_get_option('duo_host');
-       
+        $akey = duo_get_akey();
+
         $username = $user->user_login;
-
         $duo_time = duo_get_time();
-        $request_sig = Duo::signRequest($ikey, $skey, wp_salt(), $username, $duo_time);
 
+        $request_sig = Duo::signRequest($ikey, $skey, $akey, $username, $duo_time);
         duo_debug_log("Displaying iFrame. Username: $username cookie domain: " . COOKIE_DOMAIN . " redirect_to_url: $redirect ikey: $ikey host: $host duo_time: $duo_time");
         duo_debug_log("Duo request signature: $request_sig");
 
@@ -198,11 +198,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         if (isset($_POST['sig_response'])) {
             // secondary auth
             remove_action('authenticate', 'wp_authenticate_username_password', 20);
+            $akey = duo_get_akey();
 
             $duo_time = duo_get_time();
             $username = Duo::verifyResponse(duo_get_option('duo_ikey'),
                                             duo_get_option('duo_skey'),
-                                            wp_salt(),
+                                            $akey,
                                             $_POST['sig_response'],
                                             $duo_time);
             if ($username) {
@@ -670,6 +671,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
     }
 
+    function duo_get_akey(){
+        // Get an application specific secret key.
+        // If wp_salt() is not long enough, append a random secret to it
+        $akey = duo_get_option('duo_akey', '');
+        $akey .= wp_salt();
+        if (strlen($akey) < 40) {
+            duo_debug_log('WordPress secret key is less than 40 chars. Creating new akey.');
+            $akey = wp_generate_password(40, true, true);
+            update_site_option('duo_akey', $akey);
+            $akey .= wp_salt();
+        }
+        return $akey;
+    }
+
     function duo_debug_log($message) {
         global $DuoDebug;
         if ($DuoDebug) {
@@ -678,7 +693,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
 
     function duo_hash_hmac($data){
-        return hash_hmac('sha1', $data, wp_salt());
+        return hash_hmac('sha1', $data, duo_get_akey());
     }
 
     /*-------------XML-RPC Features-----------------*/
