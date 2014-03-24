@@ -1,0 +1,16 @@
+{
+        "name"       : "duosecurity/duo_wordpress",
+        "description": "Duo WordPress",
+        "homepage"   : "https://github.com/duosecurity/duo_wordpress",
+        "type"       : "wordpress-plugin",
+        "license"    : "GPL-2.0+",
+        "authors"    : [
+                {
+                        "name"    : "Duo Security",
+                        "homepage": "http://www.duosecurity.com/"
+                }
+        ],
+        "require": {
+                "composer/installers": "~1.0"
+        }
+}
