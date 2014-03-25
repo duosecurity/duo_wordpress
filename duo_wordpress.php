@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     require_once('duo_web/duo_web.php');
     $DuoAuthCookieName = 'duo_wordpress_auth_cookie';
+    $DuoSecAuthCookieName = 'duo_secure_wordpress_auth_cookie';
     $DuoDebug = false;
 
     function duo_sign_request($user, $redirect) {
@@ -565,24 +566,41 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     function duo_set_cookie($user){
 
         global $DuoAuthCookieName;
+        global $DuoSecAuthCookieName;
         $ikey_b64 = base64_encode(duo_get_option('duo_ikey'));
         $username_b64 = base64_encode($user->user_login);
         $expire = strtotime('+48 hours');
+        //Create http cookie
         $val = base64_encode(sprintf("%s|%s|%s|%s", $DuoAuthCookieName, $username_b64, $ikey_b64, $expire)); 
         $sig = duo_hash_hmac($val);
         $cookie = sprintf("%s|%s", $val, $sig);
-
-        $cookie_set = setcookie($DuoAuthCookieName, $cookie, 0, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
-        if (! $cookie_set){
-            error_log("Failed to set duo cookie for user: $user->user_login");
+        setcookie($DuoAuthCookieName, $cookie, 0, COOKIEPATH, COOKIE_DOMAIN, false, true);
+        if (COOKIEPATH != SITECOOKIEPATH){
+            setcookie($DuoAuthCookieName, $cookie, 0, SITECOOKIEPATH, COOKIE_DOMAIN, false, true);
         }
-        duo_debug_log("Set Duo cookie for user: $user->user_login path: " . COOKIEPATH . " on domain: " . COOKIE_DOMAIN);
+
+        if (is_ssl()){
+            //Create https cookie
+            $sec_val = base64_encode(sprintf("%s|%s|%s|%s", $DuoSecAuthCookieName, $username_b64, $ikey_b64, $expire)); 
+            $sec_sig = duo_hash_hmac($sec_val);
+            $sec_cookie = sprintf("%s|%s", $sec_val, $sec_sig);
+            setcookie($DuoSecAuthCookieName, $sec_cookie, 0, COOKIEPATH, COOKIE_DOMAIN, true, true);
+            if (COOKIEPATH != SITECOOKIEPATH){
+                setcookie($DuoSecAuthCookieName, $sec_cookie, 0, SITECOOKIEPATH, COOKIE_DOMAIN, true, true);
+            }
+        }
+
+        duo_debug_log("Set Duo cookie for user: $user->user_login path: " . COOKIEPATH . " network path: " . SITECOOKIEPATH . " on domain: " . COOKIE_DOMAIN . " set SSL: " . is_ssl());
     }
 
     function duo_unset_cookie(){
         global $DuoAuthCookieName;
-        setcookie($DuoAuthCookieName, '', strtotime('-1 day'), COOKIEPATH, COOKIE_DOMAIN);
-        duo_debug_log("Unset Duo cookie for path: " . COOKIEPATH . " on domain: " . COOKIE_DOMAIN);
+        global $DuoSecAuthCookieName;
+        setcookie($DuoAuthCookieName, '', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
+        setcookie($DuoAuthCookieName, '', time() - YEAR_IN_SECONDS, SITECOOKIEPATH, COOKIE_DOMAIN);
+        setcookie($DuoSecAuthCookieName, '', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
+        setcookie($DuoSecAuthCookieName, '', time() - YEAR_IN_SECONDS, SITECOOKIEPATH, COOKIE_DOMAIN);
+        duo_debug_log("Unset Duo cookie for path: " . COOKIEPATH . " network path: " . SITECOOKIEPATH . " on domain: " . COOKIE_DOMAIN);
     }
 
     function duo_verify_sig($cookie, $u_sig){
@@ -596,14 +614,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     function duo_verify_cookie($user){
     /*
         Return true if Duo cookie is valid, false otherwise
+        If using SSL, or secure cookie is set, only accept secure cookie
     */
         global $DuoAuthCookieName;
-        if(!isset($_COOKIE[$DuoAuthCookieName])){
-            error_log("Duo cookie not set. Start two factor authentication");
+        global $DuoSecAuthCookieName;
+
+        if (is_ssl() || isset($_COOKIE[$DuoSecAuthCookieName])){
+            $duo_auth_cookie_name = $DuoSecAuthCookieName;
+        }
+        else {
+            $duo_auth_cookie_name = $DuoAuthCookieName;
+        }
+
+        if(!isset($_COOKIE[$duo_auth_cookie_name])){
+            error_log("Duo cookie with name: $duo_auth_cookie_name not found. Start two factor authentication. SSL: " . is_ssl());
             return false;
         }
 
-        $cookie_list = explode('|', $_COOKIE[$DuoAuthCookieName]);
+        $cookie_list = explode('|', $_COOKIE[$duo_auth_cookie_name]);
         if (count($cookie_list) !== 2){
             error_log('Invalid Duo cookie');
             return false;
@@ -620,8 +648,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             return false;
         }
         list($cookie_name, $cookie_username_b64, $cookie_ikey_b64, $expire) = $cookie_content;
-        //Check cookie values
-        if ($cookie_name !== $DuoAuthCookieName ||
+        // Check cookie values
+        if ($cookie_name !== $duo_auth_cookie_name ||
             base64_decode($cookie_username_b64) !== $user->user_login ||
             base64_decode($cookie_ikey_b64) !== duo_get_option('duo_ikey')){
             error_log('Invalid Duo cookie content');
