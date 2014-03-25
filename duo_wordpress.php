@@ -690,7 +690,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
         if(is_user_logged_in()){
             $user = wp_get_current_user();
-            duo_debug_log("Verifying second factor for user: $user->user_login URL: " .  duo_get_uri() . ' cookie domain: ' . COOKIE_DOMAIN);
+            duo_debug_log("Verifying second factor for user: $user->user_login URL: " .  duo_get_uri() . ' path: ' . COOKIEPATH . ' network path: ' . SITECOOKIEPATH . 'cookie domain: ' . COOKIE_DOMAIN . ' is SSL: ' . is_ssl());
             if (duo_role_require_mfa($user) and !duo_verify_cookie($user)){
                 duo_debug_log("Duo cookie invalid for user: $user->user_login");
                 duo_start_second_factor($user, duo_get_uri());
