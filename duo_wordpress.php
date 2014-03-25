@@ -88,7 +88,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         </head>
 
         <body class="login" >
-            <script src="<?php echo plugins_url('duo_web/Duo-Web-v1.bundled.min.js', __FILE__); ?>"></script>
+            <script src="<?php echo plugins_url('duo_web/Duo-Web-v1.bundled.min.js?v=2', __FILE__); ?>"></script>
             <script>
             Duo.init({
                 'host': <?php echo "'" . $host . "'"; ?>,
@@ -596,10 +596,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     function duo_unset_cookie(){
         global $DuoAuthCookieName;
         global $DuoSecAuthCookieName;
-        setcookie($DuoAuthCookieName, '', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
-        setcookie($DuoAuthCookieName, '', time() - YEAR_IN_SECONDS, SITECOOKIEPATH, COOKIE_DOMAIN);
-        setcookie($DuoSecAuthCookieName, '', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
-        setcookie($DuoSecAuthCookieName, '', time() - YEAR_IN_SECONDS, SITECOOKIEPATH, COOKIE_DOMAIN);
+        setcookie($DuoAuthCookieName, '', strtotime('-1 day'), COOKIEPATH, COOKIE_DOMAIN);
+        setcookie($DuoAuthCookieName, '', strtotime('-1 day'), SITECOOKIEPATH, COOKIE_DOMAIN);
+        setcookie($DuoSecAuthCookieName, '', strtotime('-1 day'), COOKIEPATH, COOKIE_DOMAIN);
+        setcookie($DuoSecAuthCookieName, '', strtotime('-1 day'), SITECOOKIEPATH, COOKIE_DOMAIN);
         duo_debug_log("Unset Duo cookie for path: " . COOKIEPATH . " network path: " . SITECOOKIEPATH . " on domain: " . COOKIE_DOMAIN);
     }
 
