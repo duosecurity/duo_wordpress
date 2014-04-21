@@ -58,10 +58,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                     echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/wp-admin.css') . '" />';
                     echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/colors-fresh.css') . '" />';
                 }
-                else {
+                else if(version_compare($wp_version, "3.8", "<=")){
                     echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/wp-admin.css') . '" />';
                     echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/colors.css') . '" />';
                 }
+                else {
+                    echo '<link rel="stylesheet" type="text/css" href="' . admin_url('css/login.min.css') . '" />';
+                }
+
             ?>
 
             <style>
