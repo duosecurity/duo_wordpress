@@ -566,7 +566,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         return $time;
     }
 
-    // Uses Worpress HTTP, problem is that we can't specify our SSL cert here.
+    // Uses Wordpress HTTP. We can't specify our SSL cert here.
     // Servers with out of date root certs may fail.
     function duo_get_time_WP_HTTP($duo_url, $headers) {
         if(!class_exists('WP_Http')){
