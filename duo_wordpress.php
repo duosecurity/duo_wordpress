@@ -144,6 +144,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     function duo_role_require_mfa($user){
         $wp_roles = duo_get_roles();
+        $all_roles = array();
         foreach ($wp_roles->get_names() as $k=>$r) {
             $all_roles[$k] = $r;
         }
