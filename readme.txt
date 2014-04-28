@@ -66,9 +66,9 @@ If you're interested in protecting other web applications with Duo's two-factor 
 == Changelog ==
 
 = 2.3 =
-Add support for WordPress 3.9
-Update CA cert bundle
-Send user-agent with API requests
+* Add support for WordPress 3.9
+* Update CA cert bundle
+* Send user-agent with API requests
 
 = 2.2 =
 * Fix an issue that caused users to see 'Access Denied' when WordPress secret keys are not set correctly
@@ -168,9 +168,9 @@ Send user-agent with API requests
 == Upgrade Notice ==
 
 = 2.3 =
-Add support for WordPress 3.9
-Update CA cert bundle
-Send user-agent with API requests
+* Add support for WordPress 3.9
+* Update CA cert bundle
+* Send user-agent with API requests
 
 = 2.2 =
 * Please disable the plugin before upgrading, then reactivate after upgrade is done
