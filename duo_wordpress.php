@@ -719,8 +719,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         Verify the user is authenticated with Duo. Start 2FA otherwise
     */
         if (! duo_auth_enabled()){
-            $site_info = get_current_site();
-            duo_debug_log("Duo not enabled on " . $site_info->site_name . ', skip cookie check.');
+            if (is_multisite()) {
+                $site_info = get_current_site();
+                duo_debug_log("Duo not enabled on " . $site_info->site_name . ', skip cookie check.');
+            }
+            else {
+                duo_debug_log('Duo not enabled, skip cookie check.');
+            }
             return;
         }
 
