@@ -49,6 +49,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     <html>
         <head>
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
             <?php
                 global $wp_version;
                 if(version_compare($wp_version, "3.3", "<=")){
@@ -87,6 +88,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 #duo_iframe {
                     height: 500px;
                     width: 100%;
+                    min-width: 304px;
+                    max-width: 620px;
                 }
                 div {
                     background: transparent;
