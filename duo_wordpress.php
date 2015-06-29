@@ -111,8 +111,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
                 <iframe id="duo_iframe" frameborder="0" allowtransparency="true"></iframe>
             </div>
             <form method="POST" style="display:none;" id="duo_form">
+                <?php if (isset($_POST['rememberme'])) { ?>
                 <input type="hidden" name="rememberme" value="<?php echo esc_attr($_POST['rememberme'])?>"/>
                 <?php
+                }
                 if (isset($_REQUEST['interim-login'])){
                     echo '<input type="hidden" name="interim-login" value="1"/>';
                 }
