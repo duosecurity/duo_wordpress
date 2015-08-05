@@ -32,6 +32,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     $DuoDebug = false;
     $DuoPing = '/auth/v2/ping';
 
+    function parameterize($key, $value) {
+        return sprintf('%s="%s"', $key, $value);
+    }
+
     function duo_sign_request($user, $redirect) {
         $ikey = duo_get_option('duo_ikey');
         $skey = duo_get_option('duo_skey');
@@ -53,9 +57,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             'data-post-action' => $post_action,
             'frameborder' => '0',
         );
-        $iframe_attributes = array_map(function($key, $value) {
-            return sprintf('%s="%s"', $key, $value);
-        }, array_keys($iframe_attributes), array_values($iframe_attributes));
+        $iframe_attributes = array_map(
+            "parameterize",
+            array_keys($iframe_attributes),
+            array_values($iframe_attributes)
+        );
         $iframe_attributes = implode(" ", $iframe_attributes);
 
 ?>
