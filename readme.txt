@@ -2,7 +2,7 @@
 Contributors: duosecurity
 Tags: authentication, two-factor, authenticator, login, username, password, duo, security
 Requires at least: 3.0
-Tested up to: 4.1
+Tested up to: 4.2.4
 Stable tag: 2.5
 
 Easily add Duo Security two-factor authentication to your WordPress website. Enable two-factor authentication for your admins and/or users.
