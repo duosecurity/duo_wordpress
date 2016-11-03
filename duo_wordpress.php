@@ -156,7 +156,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             return false; //allows the XML-RPC protocol for remote publishing
         }
 
-        if (defined('REST_REQUEST') && REST_REQUEST && duo_get_option('duo_rest', 'off') == 'off') {
+        if (defined('REST_REQUEST') && REST_REQUEST && duo_get_option('duo_rest', '') == 'off') {
             duo_debug_log('Found a REST request. REST is allowed for this site. Skipping second factor');
             return false; //allows the REST protocol for remote access
         }
