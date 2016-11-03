@@ -400,6 +400,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         return 'on';
     }
 
+    function duo_rest_validate($option) {
+        if($option == 'off') {
+            return $option;
+        }
+        return 'on';
+    }
+
 
     function duo_add_site_option($option, $value = '') {
         // Add multisite option only if it doesn't exist already
