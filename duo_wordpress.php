@@ -485,12 +485,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         else {
             $result = update_site_option('duo_xmlrpc', 'on');
         }
-        if(isset($_POST['duo_rest'])) {
-            $rest = sanitize_text_field($_POST['duo_rest']);
-            $result = update_site_option('duo_rest', $rest);
-        }
-        else {
-            $result = update_site_option('duo_rest', 'on');
+        if ( isset( $_POST['duo_rest'] ) && 'off' === $_POST['duo_rest'] ) {
+            $result = update_site_option( 'duo_rest', 'off' );
+        } else {
+            $result = update_site_option( 'duo_rest', 'on' );
         }        
     }
 
