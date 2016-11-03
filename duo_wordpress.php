@@ -438,7 +438,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             add_settings_field('duo_host', 'API hostname', 'duo_settings_host', 'duo_settings', 'duo_settings');
             add_settings_field('duo_roles', 'Enable for roles:', 'duo_settings_roles', 'duo_settings', 'duo_settings');
             add_settings_field('duo_xmlrpc', 'Disable XML-RPC (recommended)', 'duo_settings_xmlrpc', 'duo_settings', 'duo_settings');
-            add_settings_field('duo_xmlrpc', 'Disable XML-RPC (recommended)', 'duo_settings_xmlrpc', 'duo_settings', 'duo_settings');
+            add_settings_field('duo_rest', 'Disable REST (recommended)', 'duo_settings_rest', 'duo_settings', 'duo_settings');
             register_setting('duo_settings', 'duo_ikey', 'duo_ikey_validate');
             register_setting('duo_settings', 'duo_skey', 'duo_skey_validate');
             register_setting('duo_settings', 'duo_host');
