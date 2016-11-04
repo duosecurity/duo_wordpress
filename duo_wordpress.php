@@ -156,6 +156,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             return false; //allows the XML-RPC protocol for remote publishing
         }
 
+        if (defined('REST_REQUEST') && REST_REQUEST && duo_get_option('duo_rest', '') == 'off') {
+            duo_debug_log('Found a REST request. REST is allowed for this site. Skipping second factor');
+            return false; //allows the REST protocol for remote access
+        }
+
         if (duo_get_option('duo_ikey', '') == '' || duo_get_option('duo_skey', '') == '' ||
             duo_get_option('duo_host', '') == '') {
             return false;
@@ -378,8 +383,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         echo "<input id='duo_xmlrpc' name='duo_xmlrpc' type='checkbox' value='off' $val /> Yes<br />";
         echo "Using XML-RPC bypasses two-factor authentication and makes your website less secure. We recommend only using the WordPress web interface for managing your WordPress website.";
     }
+    function duo_settings_rest() {
+        $val = '';
+        if(duo_get_option('duo_rest', '') == 'off') {
+            $val = "checked";
+        }
+        echo "<input id='duo_rest' name='duo_rest' type='checkbox' value='off' $val /> Yes<br />";
+        echo "Using REST bypasses two-factor authentication and makes your website less secure. We recommend only using the WordPress web interface for managing your WordPress website.";
+    }
+
 
     function duo_xmlrpc_validate($option) {
+        if($option == 'off') {
+            return $option;
+        }
+        return 'on';
+    }
+
+    function duo_rest_validate($option) {
         if($option == 'off') {
             return $option;
         }
@@ -417,11 +438,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             add_settings_field('duo_host', 'API hostname', 'duo_settings_host', 'duo_settings', 'duo_settings');
             add_settings_field('duo_roles', 'Enable for roles:', 'duo_settings_roles', 'duo_settings', 'duo_settings');
             add_settings_field('duo_xmlrpc', 'Disable XML-RPC (recommended)', 'duo_settings_xmlrpc', 'duo_settings', 'duo_settings');
+            add_settings_field('duo_rest', 'Disable REST (recommended)', 'duo_settings_rest', 'duo_settings', 'duo_settings');
             register_setting('duo_settings', 'duo_ikey', 'duo_ikey_validate');
             register_setting('duo_settings', 'duo_skey', 'duo_skey_validate');
             register_setting('duo_settings', 'duo_host');
             register_setting('duo_settings', 'duo_roles', 'duo_roles_validate');
             register_setting('duo_settings', 'duo_xmlrpc', 'duo_xmlrpc_validate');
+            register_setting('duo_settings', 'duo_rest', 'duo_rest_validate');
         }
     }
 
@@ -436,6 +459,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             <tr><th>API hostname</th><td><?php duo_settings_host();?></td></tr>
             <tr><th>Roles</th><td><?php duo_settings_roles();?></td></tr>
             <tr><th>Disable XML-RPC</th><td><?php duo_settings_xmlrpc();?></td></tr>
+            <tr><th>Disable REST</th><td><?php duo_settings_rest();?></td></tr>
         </table>
 <?php
     }
@@ -468,6 +492,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         else {
             $result = update_site_option('duo_xmlrpc', 'on');
         }
+        if ( isset( $_POST['duo_rest'] ) && 'off' === $_POST['duo_rest'] ) {
+            $result = update_site_option( 'duo_rest', 'off' );
+        } else {
+            $result = update_site_option( 'duo_rest', 'on' );
+        }        
     }
 
     function duo_add_page() {
