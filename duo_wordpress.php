@@ -385,7 +385,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     }
     function duo_settings_rest() {
         $val = '';
-        if(duo_get_option('duo_rest', 'off') == 'off') {
+        if(duo_get_option('duo_rest', '') == 'off') {
             $val = "checked";
         }
         echo "<input id='duo_rest' name='duo_rest' type='checkbox' value='off' $val /> Yes<br />";
