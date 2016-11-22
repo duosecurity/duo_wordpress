@@ -813,6 +813,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         add_filter('plugin_action_links', 'duo_add_link', 10, 2 );
     }
 
+    function duo_bypass_jetpack_protect( $ip ) {
+        if ( duo_auth_enabled() ) {
+            return true;
+        }
+        return false;
+    }
+    add_filter( 'jpp_allow_login', 'duo_bypass_jetpack_protect', 10, 1 );
+
     add_action('init', 'duo_verify_auth', 10);
 
     add_action('clear_auth_cookie', 'duo_unset_cookie', 10);
