@@ -1,4 +1,6 @@
 <?php
+defined('ABSPATH') or die('Direct Access Denied');
+
 /*
 Plugin Name: Duo Two-Factor Authentication
 Plugin URI: http://wordpress.org/extend/plugins/duo-wordpress/
