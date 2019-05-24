@@ -50,8 +50,11 @@ If you're interested in protecting other web applications with Duo's two-factor 
 
 == Changelog ==
 
+= 2.5.5 =
+* Update Duo Web SDK to version 2.8
+
 = 2.5.4 =
-* Update Duo WebSDK to version 2.6
+* Update Duo Web SDK to version 2.6
 
 = 2.5.3 =
 * Update Duo-Web-v2.js
@@ -280,7 +283,7 @@ If you're interested in protecting other web applications with Duo's two-factor 
 = 1.3.4 =
 * Compatibility with >3.3
 
-= 1.3.3 = 
+= 1.3.3 =
 * Added additional error checking
 
 = 1.3.2 =
