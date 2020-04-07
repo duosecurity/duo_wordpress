@@ -2,8 +2,8 @@
 Contributors: duosecurity
 Tags: authentication, two-factor, authenticator, login, username, password, duo, security
 Requires at least: 3.0
-Tested up to: 5.0
-Stable tag: 2.5.4
+Tested up to: 5.4
+Stable tag: 2.5.5
 
 Easily add Duo Security two-factor authentication to your WordPress website. Enable two-factor authentication for your admins and/or users.
 
@@ -51,7 +51,7 @@ If you're interested in protecting other web applications with Duo's two-factor 
 == Changelog ==
 
 = 2.5.5 =
-* Update Duo Web SDK to version 2.8
+* Bug fixes and updated Duo Web SDK to version 2.8
 
 = 2.5.4 =
 * Update Duo Web SDK to version 2.6
@@ -184,6 +184,9 @@ If you're interested in protecting other web applications with Duo's two-factor 
 * Initial release!
 
 == Upgrade Notice ==
+
+= 2.5.5 =
+* Bug fixes and updated Duo Web SDK to version 2.8
 
 = 2.5.4 =
 * Update Duo WebSDK to version 2.6
