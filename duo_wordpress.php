@@ -462,6 +462,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             $roles = $_POST['duo_roles'];
             $result = update_site_option('duo_roles', $roles);
         }
+        else {
+            $result = update_site_option('duo_roles', []);
+        }
 
         if(isset($_POST['duo_xmlrpc'])) {
             $xmlrpc = $_POST['duo_xmlrpc'];
