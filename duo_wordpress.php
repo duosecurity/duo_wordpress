@@ -29,10 +29,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
     require_once('duo_web/duo_web.php');
-    $DuoAuthCookieName = 'duo_wordpress_auth_cookie';
-    $DuoSecAuthCookieName = 'duo_secure_wordpress_auth_cookie';
-    $DuoDebug = false;
-    $DuoPing = '/auth/v2/ping';
+    $GLOBALS['DuoAuthCookieName'] = 'duo_wordpress_auth_cookie';
+    $GLOBALS['DuoSecAuthCookieName'] = 'duo_secure_wordpress_auth_cookie';
+    $GLOBALS['DuoDebug'] = false;
+    $GLOBALS['DuoPing'] = '/auth/v2/ping';
 
     function parameterize($key, $value) {
         return sprintf('%s="%s"', $key, $value);
