@@ -158,6 +158,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
             return false; //allows the XML-RPC protocol for remote publishing
         }
 
+        if (defined('WP_CLI') && WP_CLI) { 
+            duo_debug_log('Found a WP-CLI request. Skipping second factor');
+            return false; //allows WP-CLI commands to be invoked with the `--user` flag
+        }
+
         if (duo_get_option('duo_ikey', '') == '' || duo_get_option('duo_skey', '') == '' ||
             duo_get_option('duo_host', '') == '') {
             return false;
