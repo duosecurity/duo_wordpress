@@ -184,6 +184,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
         }
 
         /*
+         * Determine whether or not a particular user should be required
+         * to use multi-factor authentication.
+         *
+         * @param null|bool $required Whether or not to require MFA. Leave
+         *                            null to use normal check code path.
+         * @param WP_User   $user     The authenticating user.
+         */
+        $result = apply_filters('duo_require_mfa_for_user', null, $user);
+
+        if (!is_bool($result)) {
+            return $result;
+        }
+
+        /*
          * Mainly a workaround for multisite login:
          * if a user logs in to a site different from the one 
          * they are a member of, login will work however
